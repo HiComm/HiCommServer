@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "account_manager",
+    "q_and_a",
+    "knowledge",
 ]
 
 MIDDLEWARE = [
@@ -54,7 +57,7 @@ ROOT_URLCONF = 'hicomm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["q_and_a/templates",],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,14 +75,24 @@ WSGI_APPLICATION = 'hicomm.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_hicomm',
+        'USER': 'django_usr',
+        'PASSWORD': 'django',
+        'HOST': '172.19.115.160',
+        'PORT': '3306',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -103,9 +116,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+#LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ja-JP'
 
-TIME_ZONE = 'UTC'
+#TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tokyo'
 
 USE_I18N = True
 
@@ -118,3 +133,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGIN_URL = "/member/login/"
+LOGIN_REDIRECT_URL = '/hicomm/'
+LOGOUT_REDIRECT_URL='/member/login'
+
+#custom user
+AUTH_USER_MODEL = "account_manager.CustomUser"
+
+#mail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "172.20.50.100"#'mail.hioki.co.jp'
+EMAIL_HOST_USER = 't.matsutake'
+EMAIL_HOST_PASSWORD = 'Hi2481'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = False
+
+#auth_backend
+
+AUTHENTICATION_BACKENDS = [
+     'django.contrib.auth.backends.ModelBackend',
+    'account_manager.auth_backend.EmailAuthBackend', 
+    #'django.contrib.auth.backends.ModelBackend',   
+]

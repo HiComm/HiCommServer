@@ -1,0 +1,76 @@
+body{
+  background-image: url(../img/header.png);
+  backgroundsize: cover;
+}
+
+
+
+body{
+  font-family:"sans-serif";
+  text-align: center;
+  background: #000033;
+}
+.loginform {
+  width:400px;
+  margin:16px auto;
+  font-size: 16px
+}
+
+.login-header{
+  margin-top: 0;
+  margin-bottom: 0
+}
+
+.login-header{
+  background: #0099FF;
+  padding: 20px;
+  font-size: 20px;
+  font-weight: normal; /*文字の太さ*/
+  text-align: center;
+  text-transform: uppercase; /*大文字 */
+  color: #FFFFFF;
+}
+
+.login-main{
+  background: #CCFFFF;
+  padding: 12px;
+}
+
+.loginform input{
+  box-sizing: border-box; /*paddingとborderを幅と高さに含める*/
+  dsiplay: block; /*横並び*/
+  width: 100%;
+  border-width: 1px;
+  border-style: solid;
+  padding: 16px;
+  outline: 0;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.loginform input[type="email"],
+.loginform input[type="password"]{
+  background: #FFFFFF;
+  border-color: #D3D3D3;
+  color: #A9A9A9
+}
+
+.loginform input[type="email"]:focus,
+.loginform input[type="password"]:focus{
+  border-color:#696969;
+}
+
+.loginform input[type="submit"]{
+  background: #0066FF;
+  border-color: transparent; /*透明*/
+  color: #FFFFFF; /*白*/
+  cursor: pointer; /*カーソル指マーク*/
+}
+
+.loginform input[type="submit"]:hover{
+  background: #0066CC; /*カーソル色変化*/
+}
+
+.loginform input[type="submit"]:focus{
+  border-color: #0033CC;
+}

@@ -1,0 +1,89 @@
+{% extends "main_frame.html" %}
+{% block content %}
+<section id="mde-buttons" class="section">
+    <div class="field has-addons">
+        <p class="control">
+            <button class="button" onclick="bold_button()">
+                <i class="fa fa-bold"></i>
+            </button>
+        </p>
+        <p class="control">
+            <button class="button" onclick="italic_button()">
+                <i class="fa fa-italic"></i>
+            </button>
+        </p>
+        <p class="control">
+            <button class="button" onclick="header_button()">
+                <i class="fas fa-heading"></i>
+            </button>
+        </p>
+        <p class="control">
+            <button class="button">
+                <i class="fa fa-list-ul"></i>
+            </button>
+        </p>
+        <p class="control">
+            <button class="button">
+                <i class="fa fa-list-ol"></i>
+            </button>
+        </p>
+        <p class="control">
+            <button class="button">
+                <i class="fa fa-quote-right"></i>
+            </button>
+        </p>
+        <p class="control">
+            <button class="button">
+                <i class="fa fa-link"></i>
+            </button>
+        </p>
+        <p class="control">
+            <button class="button">
+                <i class="fa fa-image"></i>
+            </button>
+        </p>
+        <p class="control">
+            <button class="button" data-target="cheat-sheet" onclick="question_button()">
+                <i class="fa fa-question-circle"></i>
+            </button>
+        </p>
+    </div>
+    <!-- **************************************-->
+    <!-- **************************************-->
+
+    <div class="content" id="editor">
+        <textarea id="input" onkeyup="markdown2html()"># hoge</textarea>
+        <div id="result"></div>
+
+        <!-- markdownチートシートの表示 -->
+        <article id="cheat-sheet" class="message is-hidden">
+            <div class="message-header">
+                <p>Markdown cheat sheet</p>
+                <button class="delete is-medium" aria-label="delete" onclick="hiddenCheatSheet()"></button>
+            </div>
+            <div class="message-body">
+                <h4>Codes</h4>
+                <pre>`var example = "hello!";`<br><br><em>Or spanning multiple lines...</em><br><br>```<br>var example = "hello!";<br>alert(example);<br>```</pre>
+                <h4>Emphasis</h4>
+                <pre>**<strong>bold</strong>**<br>*<em>italic</em>*<br>~~<strike>strikethrough</strike>~~</pre>
+                <h4>Headers</h4>
+                <pre># Big header<br>## Medium header<br>### Small header<br>#### Tiny header</pre>
+                <h4>Image</h4>
+                <pre>![](http://www.example.com/image.jpg)</pre>
+                <h4>Lists</h4>
+                <pre>* Generic list item<br>* Generic list item<br>* Generic list item<br><br>1. Numbered list item<br>1. Numbered list item<br>2. Numbered list item<br>3. Numbered list item</pre>
+                <h4>Link</h4>
+                <pre>[Text to display](http://www.example.com)</pre>
+                <h4>Quotes</h4>
+                <pre>> This is a quote.<br>> It can span multiple lines!</pre>
+                <h4>Tables</h4>
+                <pre>| Column 1 | Column 2 | Column 3 |
+| -------- | -------- | -------- |<br>| John     | Doe      | Male     |<br>| Mary     | Smith    | Female   |<br><br><em>Or without aligning the columns...</em><br><br>| Column 1 | Column 2 | Column 3 |<br>| -------- | -------- | -------- |<br>| John | Doe | Male |<br>| Mary | Smith | Female |</pre>
+            </div>
+        </article>
+        <!-- 初回の反映 -->
+        <script>markdown2html();</script>
+    </div>
+
+</section>
+{% endblock %}

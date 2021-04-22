@@ -1,0 +1,68 @@
+{% extends "frame.html" %}
+
+{% block content %}
+<section class="hero is-bold is-dark is-fullheight">
+<div class="hero-body">
+	<div class="container">
+	<div class="columns is-centered">
+		<div class="column is-three-fifths">
+			<form action="" class="box" method="POST">
+                {% csrf_token%}
+                {% for field in form %}
+                    <div class="field">
+                        <div class="control has-icons-left">
+                            <!--icon-->
+                            <span class="icon is-left">
+                            {% if field.name == "password" %}
+                                <i class="fa fa-lock"></i>
+                            {% elif field.name == "company_id" %}
+                                <i class="fas fa-id-card"></i>                                
+                            {% elif field.name == "username" %}
+                                <i class="fa fa-user"></i>
+                            {% elif field.name == "email" %}  
+                                <i class="fa fa-envelope"></i>
+                            {% endif %}
+                        </span>
+                            <!-- form input-->
+                            {{ field }}
+                        </div>
+                        
+                        {% for error in field.errors %}
+                        <p class="help is-danger">
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                {% for error in form.non_field_errors %}
+                <p class="help is-danger">{{ error }}</p>
+                {% endfor %}
+                
+                <div class="field">
+                    <label for="" class="checkbox">
+                    <input type="checkbox"> Remember me
+                    </label>
+                </div>
+                <div class="field">
+                    <button class="button is-info is-fullwidth" type=submit>
+                    <i class="fa fa-sign-in"></i>
+                    　Login
+                    </button>
+                </div>
+            </form>
+			
+			<div class="column">
+				<label class="has-text-left"> 新たに登録する場合 　<i class="fa fa-hand-o-right"></i></label>
+				<a href="{% url 'account_manager:register' %}"><button class="button is-success">
+					Sign Up
+				</button>
+                </a>
+			</div>
+		</div>
+	</div>
+	</div>
+</div>
+</section>
+
+{% endblock %}

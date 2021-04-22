@@ -1,0 +1,93 @@
+{% extends "main_frame.html" %}
+{% block content %}
+<div class="section" style="border:1px solid">
+    小ネタの投稿欄
+</div>
+<main class="columns">
+
+    <div class="column">
+        <div class="columns">
+            <div class="column has-background-grey-light">
+                <h1 class="title headline-red">Q＆A</h1>
+                <!--yagi コピペのヤバイやつ　-->
+    <form method="GET" name="form1" action="./answer.php">
+<!-- valueをtest_idから、データベースでとってきたidに　-->
+    <input type="hidden" name="question_id" value="test_id">
+    <a href="javascript:form1.submit()">
+    <div class="box">
+
+                    <article class="media">
+                        <div class="media-left">
+                        </div>
+                        <div class="media-content">
+                        <div class="content">
+                            <p>
+                            <strong>一番コスパのいいランチメニューはなんですか？</strong> <small>@johnsmith</small> <small>31m</small>
+                            <br>
+                            半カレーじゃないですか？
+                            </p>
+                        </div>
+                        </div>
+                    </article>
+    </form>
+                </div>
+    </a>
+    </form>
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                        </div>
+                        <div class="media-content">
+                        <div class="content">
+                            <p>
+                            <strong>C#でハローワールドしたいんですが</strong> <small>@johnsmith</small> <small>31m</small>
+                            <br>
+                            Console.Writeline("hello world");
+                            </p>
+                        </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+              <!--yagi コピペのヤバイやつ　-->
+
+            <div class="column has-background-white-ter">
+                <h1 class="title headline-blue">Knowledge</h1>
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                        </div>
+                        <div class="media-content">
+                        <div class="content">
+                            <p>
+                            <strong>C2Fの牛乳屋さんのコーヒーに合うお菓子</strong> <small>@johnsmith</small> <small>31m</small>
+                            <br>
+                            アルフォート一択
+                            </p>
+                        </div>
+                        </div>
+                    </article>
+                </div>
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                        </div>
+                        <div class="media-content">
+                        <div class="content">
+                            <p>
+                            <strong>C棟２階のらせん階段の段数</strong> <small>@johnsmith</small> <small>31m</small>
+                            <br>
+                            約40段ですね
+                            </p>
+                        </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="submenu column is-2">
+        サブメニューのところ
+    </div>
+　</main>
+{% endblock %}

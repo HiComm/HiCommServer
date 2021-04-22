@@ -1,0 +1,11 @@
+{{ user.email }} 様 
+
+HiCommへようこそ！
+
+下記URLよりサイトにアクセスの上、引き続き会員登録をお願いいたします。
+まだ会員登録手続きは完了しておりませんので、ご注意ください。
+
+本登録用URL
+{{ protocol}}://{{ domain }}{% url 'account_manager:registerDone' token %}
+
+HiComm Developer Team

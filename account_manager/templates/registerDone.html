@@ -1,0 +1,16 @@
+{% extends "frame.html" %}
+{% block content %}
+
+<p class="title is-1">
+ようこそ！
+</p>
+<p>
+本登録が完了しました。<br>
+登録されたメールアドレスとパスワードでログインしてください。<br>
+</p>
+<div class="buttons">
+    <a href="{% url 'account_manager:login' %}"><button class="button is-info is-light">ログイン</button></a>
+    <a href="{% url 'q_and_a:index' %}"><button class="button is-success is-light">ホーム</button></a>
+</div>
+
+{% endblock %}

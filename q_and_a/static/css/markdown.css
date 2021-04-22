@@ -1,0 +1,57 @@
+:root {
+    --markdown-width: 50%;
+    --markdown-height: 500px;
+    --markdown-cheat-sheet-width: 24%;
+}
+
+#editor {
+    display: flex;
+    position: relative;
+}
+
+#input {
+    border: 1px solid #ccc;
+    min-width: var(--markdown-width);
+    min-height: var(--markdown-height);
+    resize: none;
+    outline: none;
+    font-size: 14px;
+    background-color: #f6f6f6;
+    font-family: 'Courier New', Courier, Monaco, monospace;
+    padding: 20px;
+}
+
+#result {
+    border: 1px solid #ccc;
+    position: absolute;
+    left: var(--markdown-width);
+    width: var(--markdown-width); 
+    height: var(--markdown-height);
+    padding: 10px;
+    overflow-wrap: break-word;
+    overflow-y: auto;
+}
+
+#cheat-sheet {
+    position: absolute;
+    left: 76%;
+    width: var(--markdown-cheat-sheet-width);
+    height: 500px;
+}
+
+#cheat-sheet .message-body {
+    height: 430px;
+    overflow: auto;
+
+}
+
+#cheat-sheet .message-header p {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#cheat-sheet .message-body :nth-last-child(n) {
+    font-family:
+        Monaco, Consolas, "Courier New", Courier, 
+        monospace, "ＭＳ ゴシック", "MS Gothic", Osaka−等幅;
+}

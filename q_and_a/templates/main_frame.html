@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <!-- ファビコン（サイトのアイコン）設定．-->
+        <link rel="shortcut icon" href="{% static "images/hiokichi.ico" %}" type="image/vnd.microsoft.icon">
+        <!-- CSSフレームワーク：BULMA (https://bulma.io/documentation/) -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.13.0/css/all.css">
+        <!-- marked.js: マークダウンのプレビュー表示用のスクリプト -->
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <!-- ソースコードのシンタックスハイライト用のスクリプト -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/default.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+        <!-- ショートカットキーを実装するためのスクリプト -->
+        <script type="text/javascript" src="{% static "js/shortcut.js" %}"></script>
+
+        <!-- マークダウンエディタ用の自作ボタン -->
+        <script src="{% static "js/markdown_buttons.js" %}"></script>
+        <script src="{% static "js/markdown.js" %}"></script>
+
+        <!-- カスタム用のCSS -->
+        <link rel="stylesheet" type="text/css" href="{% static "css/customize_bulma.css" %}">
+        <link rel="stylesheet" type="text/css" href="{% static "css/headline.css" %}">
+        <link rel="stylesheet" type="text/css" href="{% static "css/markdown.css" %}">
+
+
+        <title>HiComm</title>
+    </head>
+
+    <body>
+    <!-- header -->
+
+    <!-- navi -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="navbar-menu">
+                <a class="navbar-item">
+                    <img src="{% static "images/hiokichi.ico" %}" width="auto">
+                </a>
+                <a class="navbar-item" href="{% url 'q_and_a:index' %}">
+                    Home
+                </a>
+                <a class="navbar-item" href="{% url 'q_and_a:about' %}">
+                    About
+                </a>
+            </div>
+        </div>
+        <div class="navbar-end">
+            <span class="navbar-item">
+                {% if user.is_authenticated %}
+                <p class="navbar-item">ようこそ！　{{ user.username }} さん</p>
+                <a class="fas fa-sign-out-alt"  href="{% url 'account_manager:logout' %}">ログアウト</a>
+                {% else %}
+                <a href="{% url 'account_manager:login' %}" class="fa fa-user"> ログイン</a>
+                {% endif %}
+            </span>
+        </div>
+    </nav>
+
+    <!-- title -->
+    <section class="hero is-dark">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title frp-title"> HiComm </h1>
+
+                <!-- なんちゃて検索バー -->
+                <div class="field has-addons">
+                    <div class="control">
+                        <a class="button is-primary" style="margin-right: 5px">
+                            <span>
+                            <i class="fa fa-pencil-square"></i>ナレッジを投稿する
+                            </span>
+                        </a>
+                    </div>
+                    <div class="control">
+                        <a class="button is-success" style="margin-right: 5px" href="{% url 'q_and_a:post_question' %}">
+                            <i class="fa fa-user"></i> 質問を投稿する
+                        </a>
+                    </div>
+
+                    <div class="control is-expanded">
+                        <input class="input is-rounded" type="text" placeholder="キーワード検索">
+                    </div>
+                    <div class="control">
+                        <a class="button is-info">
+                            <i class="fa fa-search"></i> 検索
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- main body -->
+    <section class="section">
+        {% block content %}{% endblock %}
+    </section>
+
+    <!-- ============================================================================ -->
+
+    <!-- footer -->
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                ©️ 2021 HiComm Developer Team
+            </p>
+        </div>
+    </footer>
+    </body>
+<!--
+                                   ...((-......
+                              `   (HH@H@@@@ggHHkkA+.
+                         `  `  ` (H@@H@@@@@@ggqqkWWI-` ` `  `  `
+                `  `` `   `     .WHHH@@@@@@@ggmqqbfkl.`   `      `
+                 `  `  `    `   dMH@H@H@@@@@gmmqkbpWX_       `
+                ` ...(JJJJJ(-..JWMMMMMMMMHgg@gmqkbpWXO_ `  `    `
+                .HNNNNNNNNNNNN#N###HHHHHHHMHHHHHHHkkQQa+--..... `  ` ``  ` `
+    ` `     `  `.M#NNNNNNNNNNNNNNNNNNN#######HHHHHHH@@@@@gmmHHkkA&..    `   `
+   ` ....        dMNNNNNNNNNNNNNNNN########HHHHHHH@@@@H@@gggmqqkHf0>
+   (XHHHkkkQQQQQQWMNMMMMMMMMMMMMN####HHHMMHHHHHH@@@HH@@@H@gmmqkbfWI~ ` ` `  `
+   dHggmgggggggg@@HH#####NNNNMMMMHHHHWWWWHMMMMMMMMM@HHHMMNNNMMMMHK: `   ` `
+    ?WHHHHHHHHHHH@MMHHHHH####MHZZZXvwOOOOOvzz11111zzIzOZWM#HHMMMNA-...   ` ` `
+       _~???777777<????jMHHHMHuuXwOOz=??>>>>;;:::<:::<<<?UMMMHHmkpfVZXXXXwwA+
+   `    `             .HHHHMSXzwOtl=?>>>;;;;;::~~~~~~~~~~(4kkHHgHHkkWfVyyyVfS_
+     `   `  `   `    (H@H@MSrrttl===?>;;;;;:::::~~~~..~...(OWpWl _??7"TYYY77!`
+      `        ` ``.jH@@@HStttll===??>+uQQQko::~~(ue&._...._vWyk-
+  `     `  `  `   .d@@@@H0tll===????1dH9<;;;;::~~~~~~?X...`._vZZw-      `  `
+    `     `  `.---(7WHHHSl===???????z01>>;;:::::~~~~~~(6<..`._OZuI.``  `     `
+       `      jzllz+:11<+l==??????>?>>>>+jmo;::~~~_Je-......`.(XZXl
+      `   `   (OtltOz<1<1tt=??????>>>>>>jMNN>:~:~~(MMr_.....`. ?<zC_---.  ` `
+   `       `   ?XOrrwO+<+Ov??????>>?>>;>dNNN>:~~~~(M#b_......._(?<<<>++<_  `
+       `  `   `.kkuzvvtz>z=??????>?>>>>>dMN#<::~:~(H#D~~....._(<++++?==<`
+  `         `  d@HkuuuOzzz???>?>??>>?>>;<79>::::~~~?9>~......(l==llllv!`  `  `
+    `  `  `   -W@@@HkzOI1?????>?>>>>>>>>;;;;:::~:~~~~~~.~.~.~_+OzltOO_     `
+      `      `(H@@@MRO=????>>>?>>???>>>>;;;;::~:~:~~~~~~.~~~~~(1OOwXk_  `
+   `       `  jggggH0l==???zwuuwz+>?>>>>;;;::::~~~~~~~~~~..~((_~<wfVk_   `  ` `
+     `  `    `JggmmHZll=?=zuuuuuzO>?>>>;;;::::::~~:~~~~~~~~(==z_~jVVk_
+   `       `  JHmmmHkl===?OuuuuuXA?>>>>;;;;:::~:~:~~~~~~~~(sz=z<~jfV0  `
+      `      `(WggmHkl==??zwuuuzHMmx<>>;;;;::::~~~~~~~~~-(K8llv~~dpVI   `  `
+         `  ` (WqqmHRll==???1zz1?vWMHex+>>;;;::::~~:~_(+W9>_<<~~(dfV>     `  `
+   `   `   `   XqqmmHZll===???>?>>>1VWMNmme&++++(J+ggHB=<~~~~~~:jWfW:
+               jgHqmmkOll===????????>>?+OTTHMMMMHB9Y<<~~~:~::::jXbWC` `` ` `
+          `     OqqgggkOttz===????????>?>>>>>>;::::~::~::::::+uWbW$``       `
+                .ZHmmggHyttll====??????>???>??>;::::::::(:;>jdkHW$``    `
+                  ?HqqqmHkwttllllll===?????????>;;;;;;;;++udkbfV>     `
+               `   (THqqmmHkmAOttlllll========1?>??+++zuwWkkH0>`          `
+                     _7HmmqqqmHkQXwwwwwwwwwwwwwwwwwmkWkqkH9Y!   `  `   `    `
+               `  `     ?TWqqqqqqqmgggggggH@@@ggHqkppWUY!`      `
+                 `  `       ~?7TWWbHHqqHmqHHHHHHUU0!` `       `     `   `
+                                (zzzz1111zwvOOz=??<
+                                .1??>>;;;+Ort=?>>><`    `  `  `  `
+                             `   +??>;:::+wrl?>>><_  ` `    `
+                            `  ` +?>;::::+zwOz1?+udkXA&. `     `
+                                 +?>;;:::jkkkAQkHmmqkWWkl `  `   `
+                 `     `       `.+>>;;:::JH@@@ggggmgmmHHk_`     `
+               `  ` `  ` ` `  ..jAA&+(::<vMH@@@@@gggggmqR!  `
+                        `  .(dWkqqqkkWkkk< ?7YWH@@ggggH9=    ` `  `
+                     `     jmmmmqqqqkkkkHr`  `   _!!!~``      `
+              ` ` `   `  `.WggggmqqqqkkkkD                `      `
+                   `  `   .Hg@gggmmqmmqH9`  `              `  `
+                       `  .U@@@ggggmmH9>   `  ` `  `   `    `   `
+               `  `      `  ?7"TTT77<`       `   `      ` `      `
+-->
+</html>
