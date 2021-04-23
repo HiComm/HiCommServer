@@ -9,7 +9,7 @@
     position: relative;
 }
 
-#input {
+#input,#id_body{
     border: 1px solid #ccc;
     min-width: var(--markdown-width);
     min-height: var(--markdown-height);

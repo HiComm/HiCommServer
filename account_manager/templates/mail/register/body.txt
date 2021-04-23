@@ -1,4 +1,4 @@
-{{ user.email }} 様 
+{{ user.username }} 様 
 
 HiCommへようこそ！
 

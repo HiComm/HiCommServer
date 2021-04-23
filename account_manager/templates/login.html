@@ -6,6 +6,7 @@
 	<div class="container">
 	<div class="columns is-centered">
 		<div class="column is-three-fifths">
+            <p class="title">Login</p>
 			<form action="" class="box" method="POST">
                 {% csrf_token%}
                 {% for field in form %}
@@ -45,7 +46,7 @@
                     </label>
                 </div>
                 <div class="field">
-                    <button class="button is-info is-fullwidth" type=submit>
+                <button class="button is-info is-fullwidth" type=submit>
                     <i class="fa fa-sign-in"></i>
                     　Login
                     </button>
@@ -53,7 +54,7 @@
             </form>
 			
 			<div class="column">
-				<label class="has-text-left"> 新たに登録する場合 　<i class="fa fa-hand-o-right"></i></label>
+				<label class="has-text-left"> 新たに登録する場合 　<i class="fas fa-point-right"></i></label>
 				<a href="{% url 'account_manager:register' %}"><button class="button is-success">
 					Sign Up
 				</button>
@@ -64,5 +65,4 @@
 	</div>
 </div>
 </section>
-
 {% endblock %}

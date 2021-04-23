@@ -25,7 +25,7 @@ SECRET_KEY = '8wx$83*xbotj67bgy$!asqg#0m=b)i9xrmrs1yz-g^1m^gs0md'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -91,6 +91,10 @@ DATABASES = {
         'PASSWORD': 'django',
         'HOST': '172.19.115.160',
         'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'sql_mode': 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO,ONLY_FULL_GROUP_BY',
+        },
     }
 }
 
@@ -152,7 +156,9 @@ EMAIL_USE_TLS = False
 #auth_backend
 
 AUTHENTICATION_BACKENDS = [
-     'django.contrib.auth.backends.ModelBackend',
-    'account_manager.auth_backend.EmailAuthBackend', 
-    #'django.contrib.auth.backends.ModelBackend',   
+    'django.contrib.auth.backends.ModelBackend',
+    'account_manager.auth_backend.EmailAuthBackend',  
 ]
+
+#password check...
+AUTH_PASSWORD_VALIDATORS = []

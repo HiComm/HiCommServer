@@ -6,8 +6,8 @@ window.onload = function() {
 
 // textareaでのTABキー入力
 function inputTabInTextarea() {
-    document.getElementById('input').onkeydown = function(e) {
-        if (e.keyCode === 9) {
+    document.getElementById('id_body').onkeydown = function(e) {
+        if (e.key == "Tab") {
             e.preventDefault();
             var elem = e.target;
             var val = elem.value;
@@ -34,7 +34,7 @@ function validFocusOnTextarea() {
 
 // textareaのfocusになったらmarkdownのショートカットキーの追加
 function addShortcutKey() {
-    document.getElementById('input').onfocus = function() {
+    document.getElementById('id_body').onfocus = function() {
         // "B"ボタン
         shortcut.add("Shift+a", function() {
             $('#mde-buttons div p:nth-child(1) button').click();
@@ -50,7 +50,7 @@ function addShortcutKey() {
 
 // textareaのfocusが外れたらmarkdownのショートカットを削除　
 function removeShortcutKey() {
-    document.getElementById('input').onblur = function() {
+    document.getElementById('id_body').onblur = function() {
         // "B"ボタン
         shortcut.remove("Shift+a");
         // I ボタン(** **)
@@ -64,7 +64,7 @@ function removeShortcutKey() {
 
 function markdown2html() {
     document.getElementById('result').innerHTML =
-    marked(document.getElementById('input').value);
+    marked(document.getElementById('id_body').value);
 
     //===============================================
     //@brief  更新毎にシンタックスハイライトの判定します

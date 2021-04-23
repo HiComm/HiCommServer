@@ -8,7 +8,7 @@ $(document).ready(function(){
   });
 
 function bold_button(){
-    var editor = document.getElementById("input");
+    var editor = document.getElementById("id_body");
     var pos_start = editor.selectionStart;
     var pos_end = editor.selectionEnd;
     var sentence = editor.value;
@@ -32,7 +32,7 @@ function bold_button(){
     markdown2html();
 }
 function italic_button(){
-    var editor = document.getElementById("input");
+    var editor = document.getElementById("id_body");
     var pos_start = editor.selectionStart;
     var pos_end = editor.selectionEnd;
     var sentence = editor.value;
@@ -57,7 +57,7 @@ function italic_button(){
 }
 
 function header_button(){
-    var editor = document.getElementById("input");
+    var editor = document.getElementById("id_body");
     var pos_start = editor.selectionStart;
     var pos_end = editor.selectionEnd;
     var sentence = editor.value;
@@ -92,7 +92,7 @@ function header_button(){
 }
 
 function question_button() {
-    document.getElementById('input').focus();
+    document.getElementById('id_body').focus();
 
     var result = document.getElementById('result');
     var sheet = document.getElementById('cheat-sheet');

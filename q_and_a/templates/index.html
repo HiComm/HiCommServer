@@ -1,20 +1,23 @@
 {% extends "main_frame.html" %}
 {% block content %}
 <div class="section" style="border:1px solid">
-    小ネタの投稿欄
+    Hiokimochi投稿
 </div>
 <main class="columns">
 
     <div class="column">
         <div class="columns">
+            <!-- Q and A　-->
             <div class="column has-background-grey-light">
                 <h1 class="title headline-red">Q＆A</h1>
-                <!--yagi コピペのヤバイやつ　-->
-    <form method="GET" name="form1" action="./answer.php">
-<!-- valueをtest_idから、データベースでとってきたidに　-->
-    <input type="hidden" name="question_id" value="test_id">
-    <a href="javascript:form1.submit()">
-    <div class="box">
+                {% if not Question_list %}
+                <div class="has-text-centered">
+                    <p>まだ投稿はありません。<br>気軽に投稿してみてください。</p>
+                </div>
+                {% endif %}
+
+                {% for q in Question_list %}                
+                <div class="box">
 
                     <article class="media">
                         <div class="media-left">
@@ -22,72 +25,56 @@
                         <div class="media-content">
                         <div class="content">
                             <p>
-                            <strong>一番コスパのいいランチメニューはなんですか？</strong> <small>@johnsmith</small> <small>31m</small>
+                            <strong>{{ q.title }}</strong> <small>@{{ q.author.username }}</small> <small>{{ q.date_created }}</small>
                             <br>
-                            半カレーじゃないですか？
-                            </p>
-                        </div>
-                        </div>
-                    </article>
-    </form>
-                </div>
-    </a>
-    </form>
-                <div class="box">
-                    <article class="media">
-                        <div class="media-left">
-                        </div>
-                        <div class="media-content">
-                        <div class="content">
-                            <p>
-                            <strong>C#でハローワールドしたいんですが</strong> <small>@johnsmith</small> <small>31m</small>
-                            <br>
-                            Console.Writeline("hello world");
+                            {{ q.body | truncatechars:300 }}
                             </p>
                         </div>
                         </div>
                     </article>
                 </div>
+                {% endfor %}
+                
             </div>
-              <!--yagi コピペのヤバイやつ　-->
+            <!-- knowledge　-->
 
             <div class="column has-background-white-ter">
                 <h1 class="title headline-blue">Knowledge</h1>
+                {% if not Diary_list %}
+                <div class="has-text-centered">
+                    <p>まだ投稿はありません。是非投稿してみてください。</p>
+                </div>
+                {% endif %}
+                {% for q in Diary_list %}                
                 <div class="box">
+
                     <article class="media">
                         <div class="media-left">
                         </div>
                         <div class="media-content">
                         <div class="content">
                             <p>
-                            <strong>C2Fの牛乳屋さんのコーヒーに合うお菓子</strong> <small>@johnsmith</small> <small>31m</small>
+                            <strong>{{ q.title }}</strong> <small>@ {{ q.author.username }}</small> <small>{{q.date_created }}</small>
                             <br>
-                            アルフォート一択
+                            {{ q.body | truncatechars:300}}
                             </p>
                         </div>
                         </div>
                     </article>
                 </div>
-                <div class="box">
-                    <article class="media">
-                        <div class="media-left">
-                        </div>
-                        <div class="media-content">
-                        <div class="content">
-                            <p>
-                            <strong>C棟２階のらせん階段の段数</strong> <small>@johnsmith</small> <small>31m</small>
-                            <br>
-                            約40段ですね
-                            </p>
-                        </div>
-                        </div>
-                    </article>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
     <div class="submenu column is-2">
-        サブメニューのところ
+        Hiokimochi Timeline
+        <div class="text">
+            <ul>
+              {% for q in Question_list %}
+              <li>{{ q.title }}</li>
+              {% endfor %}
+            </ul>
+          </div>
     </div>
 　</main>
 {% endblock %}

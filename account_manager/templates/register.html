@@ -5,6 +5,15 @@
 <div class="hero-body">
 	<div class="container">
 	<div class="columns is-centered">
+        <div class="column">
+            <label class="title has-text-centered">会員登録</label>
+            <hr>
+            <br>
+            <p>
+                入力いただいたメールアドレスに登録完了用リンクを送信します。<br>
+                リンクをクリックすることで登録が完了したします。
+            </p>
+        </div>
 		<div class="column is-three-fifths">
 			<form action="" class="box" method="POST">
                 {% csrf_token%}
@@ -14,7 +23,7 @@
                         <div class="control has-icons-left">
                             <!--icon-->
                             <span class="icon is-left">
-                            {% if field.name == "password" %}
+                            {% if "password" in field.name %}
                                 <i class="fa fa-lock"></i>
                             {% elif field.name == "company_id" %}
                                 <i class="fas fa-id-card"></i>                                

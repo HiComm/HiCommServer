@@ -59,7 +59,7 @@
                 <!-- なんちゃて検索バー -->
                 <div class="field has-addons">
                     <div class="control">
-                        <a class="button is-primary" style="margin-right: 5px">
+                        <a class="button is-primary" style="margin-right: 5px" href="{% url 'q_and_a:post_article' %}">
                             <span>
                             <i class="fa fa-pencil-square"></i>ナレッジを投稿する
                             </span>
@@ -85,9 +85,9 @@
     </section>
 
     <!-- main body -->
-    <section class="section">
-        {% block content %}{% endblock %}
-    </section>
+    
+    {% block content %}{% endblock %}
+    
 
     <!-- footer -->
     <footer class="footer">

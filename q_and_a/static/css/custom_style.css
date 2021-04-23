@@ -1,0 +1,23 @@
+
+.footer_toolbar_container{
+    position:fixed;
+    bottom:0;
+    width:95%;
+    padding:5px 0 5px 0;
+    text-align:center;
+  }
+
+.footer_toolbar{
+    display: flex;
+    flex-direction:row-reverse;
+    -moz-box-pack: end;
+    justify-content: flex-start;
+    -moz-box-align: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer_toolbar_button{
+    display: block;
+    /*width: 60%;*/
+}

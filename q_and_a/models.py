@@ -2,10 +2,10 @@ from django.db import models
 from django.utils import timezone
 
 import sys
-sys.path.append("../")
-from account_manager.models import CustomUser
+from django.contrib.auth import get_user_model
 # Create your models here.
 
+CustomUser = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField(max_length=256)
@@ -13,11 +13,11 @@ class Tag(models.Model):
         return self.name
 
 class PostItem(models.Model):
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     body = models.TextField(default="")
-    date_created = models.TimeField(default=timezone.now)
-    date_modified = models.TimeField(default=timezone.now)
-    date_published = models.TimeField(default=timezone.now)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now_add=True)
+    date_published = models.DateTimeField(auto_now_add=True)
     point_good = models.IntegerField(default=0)
 
     #flags
@@ -31,16 +31,13 @@ class Comment(PostItem):
 class Question(PostItem):
     title = models.CharField(default="", max_length=512)
     tags = models.ManyToManyField(Tag)
-    comments = models.ForeignKey(Comment, on_delete=models.CASCADE)
 
 class Answer(PostItem):
     reply_to = models.ForeignKey(Question, on_delete=models.CASCADE)
-    comments = models.ForeignKey(Comment, on_delete=models.CASCADE)
 
 class Diary(PostItem):
     title = models.CharField(default="", max_length=512)
     tags = models.ManyToManyField(Tag)
-    comments = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="%(class)s_comment")
-    related_to = models.ForeignKey(PostItem, on_delete=models.CASCADE, related_name="%(class)s_related_to")
+    related_to = models.ForeignKey(PostItem, on_delete=models.CASCADE, related_name="%(class)s_related_to",  null=True, blank=True, default=None)
 
 
