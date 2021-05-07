@@ -21,3 +21,21 @@
     display: block;
     /*width: 60%;*/
 }
+
+
+
+/* hicomm custom */
+
+.hicomm-solved{
+    background: #FDD;
+    border: solid 1px #F58;
+    border-radius: 3px;
+    color: #F58;
+}
+
+.hicomm-notsolved{
+    background: #bff;
+    border: solid 1px #4ec4d3;
+    border-radius: 3px;
+    color: #4ec4d3;
+}

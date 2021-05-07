@@ -17,10 +17,19 @@
                 {% endif %}
 
                 {% for q in Question_list %}                
-                <div class="box">
+                <div class="box" onclick="location.href='{% url 'q_and_a:detail_question' q.uuid %}'" style="cursor: hand; cursor:pointer;">
 
                     <article class="media">
                         <div class="media-left">
+                            <div class="image is-48x48 has-text-centered">
+                                {% if q.is_solved %}
+                                    <small><span class="hicomm-solved">解決済</span></small>
+                                {% else %}
+                                    <small><span class="hicomm-notsolved">受付中</span></small>
+                                {% endif %}
+                                <br>
+                                <small style="color: darkgoldenrod"><i class="fal fa-lightbulb-on"></i> {{ q.point_good }}</small>
+                            </div>
                         </div>
                         <div class="media-content">
                         <div class="content">
@@ -34,7 +43,32 @@
                     </article>
                 </div>
                 {% endfor %}
-                
+
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    {% if Question_list.has_previous %}
+                    <a class="pagination-previous" href="?p1={{ Question_list.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    {% if Question_list.has_next %}
+                    <a class="pagination-next" href="?p1={{ Question_list.next_page_number }}">Next</a>
+                    {% endif %}
+                    <ul class="pagination-list">
+                        {% if Question_list.has_previous %}
+                            {% if Question_list.previous_page_number != 1 %}
+                            <li><a class="pagination-link" href="?p1=1">1</a></li>
+                            <li><i class="fas fa-ellipsis-h"></i></li>
+                            {% endif %}
+                            <li><a class="pagination-link" href="?p1={{ Question_list.previous_page_number }}">{{ Question_list.previous_page_number }}</a></li>
+                        {% endif %}
+                        <li><a class="pagination-link is-current" href="?p1={{ Question_list.number }}" >{{ Question_list.number }}</a></li>
+                        {% if Question_list.has_next %}
+                            <li><a class="pagination-link" href="?p1={{ Question_list.next_page_number }}">{{ Question_list.next_page_number }}</a></li>
+                            {% if Question_list.next_page_number != Question_list.paginator.num_pages %}
+                            <li><i class="fas fa-ellipsis-h"></i></li>
+                            <li><a class="pagination-link" href="?p1={{ Question_list.paginator.num_pages }}">{{ Question_list.paginator.num_pages }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                </nav>
             </div>
             <!-- knowledge　-->
 

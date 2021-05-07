@@ -13,6 +13,7 @@ window.onbeforeunload = function(event){
   }
 </script>
 <section id="mde-buttons" class="section">
+    {% csrf_token %}
     <form method="POST">
         {% csrf_token%}
     <div class="field">
@@ -107,12 +108,47 @@ window.onbeforeunload = function(event){
         </article>
     </div>
 
+    <script>
+        function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+                     // Does this cookie string begin with the name we want?
+                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                         break;
+                     }
+                 }
+             }
+             return cookieValue;
+        }
+        function save_draft(){
+            $.ajax({
+                    url: "ajax/save_draft",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    data: {
+                        id : "{{ id }}",
+                        title: $("#id_title")[0].value,
+                        body: $("#id_body")[0].value,
+                    },
+                    timeout: 10000,
+                    dataType: "json",
+            }).done( function(rcv) {
+                alert("done" + rcv);
+                $("#id_body")[0].value += rcv;
+            });
+        }
+
+    </script>
     
         
     <div class="footer_toolbar_container has-background-link-dark">
         <div class="footer_toolbar">
             <button class="button is-large is-primary footer_toolbar_button" type="submit">投稿する</button>
-            <button class="button is-large is-info is-light footer_toolbar_button" type="button">下書き保存</button>
+            <button class="button is-large is-info is-light footer_toolbar_button" type="button" onclick="save_draft()" formaction="ajax/save_draft">下書き保存</button>
       </div>
     </div>
     </form>

@@ -20,7 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     #q_and_a
-    path("hicomm/", include("q_and_a.urls")),
+    path("", include("q_and_a.urls")),
     #login
     path("member/", include("account_manager.urls"))
 ]
