@@ -3,104 +3,99 @@
 <div class="section" style="border:1px solid">
     Hiokimochi投稿
 </div>
-<main class="columns">
+<main class="columns is-mobile is-variable is-0-mobile is-2-tablet is-4-desktop is-6-widescreen is-8-fullhd" style="word-break: break-all;">
 
-    <div class="column">
-        <div class="columns">
-            <!-- Q and A　-->
-            <div class="column has-background-grey-light">
-                <h1 class="title headline-red">Q＆A</h1>
-                {% if not Question_list %}
-                <div class="has-text-centered">
-                    <p>まだ投稿はありません。<br>気軽に投稿してみてください。</p>
-                </div>
-                {% endif %}
-
-                {% for q in Question_list %}                
-                <div class="box" onclick="location.href='{% url 'q_and_a:detail_question' q.uuid %}'" style="cursor: hand; cursor:pointer;">
-
-                    <article class="media">
-                        <div class="media-left">
-                            <div class="image is-48x48 has-text-centered">
-                                {% if q.is_solved %}
-                                    <small><span class="hicomm-solved">解決済</span></small>
-                                {% else %}
-                                    <small><span class="hicomm-notsolved">受付中</span></small>
-                                {% endif %}
-                                <br>
-                                <small style="color: darkgoldenrod"><i class="fal fa-lightbulb-on"></i> {{ q.point_good }}</small>
-                            </div>
-                        </div>
-                        <div class="media-content">
-                        <div class="content">
-                            <p>
-                            <strong>{{ q.title }}</strong> <small>@{{ q.author.username }}</small> <small>{{ q.date_created }}</small>
-                            <br>
-                            {{ q.body | truncatechars:300 }}
-                            </p>
-                        </div>
-                        </div>
-                    </article>
-                </div>
-                {% endfor %}
-
-                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                    {% if Question_list.has_previous %}
-                    <a class="pagination-previous" href="?p1={{ Question_list.previous_page_number }}">Previous</a>
-                    {% endif %}
-                    {% if Question_list.has_next %}
-                    <a class="pagination-next" href="?p1={{ Question_list.next_page_number }}">Next</a>
-                    {% endif %}
-                    <ul class="pagination-list">
-                        {% if Question_list.has_previous %}
-                            {% if Question_list.previous_page_number != 1 %}
-                            <li><a class="pagination-link" href="?p1=1">1</a></li>
-                            <li><i class="fas fa-ellipsis-h"></i></li>
-                            {% endif %}
-                            <li><a class="pagination-link" href="?p1={{ Question_list.previous_page_number }}">{{ Question_list.previous_page_number }}</a></li>
-                        {% endif %}
-                        <li><a class="pagination-link is-current" href="?p1={{ Question_list.number }}" >{{ Question_list.number }}</a></li>
-                        {% if Question_list.has_next %}
-                            <li><a class="pagination-link" href="?p1={{ Question_list.next_page_number }}">{{ Question_list.next_page_number }}</a></li>
-                            {% if Question_list.next_page_number != Question_list.paginator.num_pages %}
-                            <li><i class="fas fa-ellipsis-h"></i></li>
-                            <li><a class="pagination-link" href="?p1={{ Question_list.paginator.num_pages }}">{{ Question_list.paginator.num_pages }}</a></li>
-                            {% endif %}
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-            <!-- knowledge　-->
-
-            <div class="column has-background-white-ter">
-                <h1 class="title headline-blue">Knowledge</h1>
-                {% if not Diary_list %}
-                <div class="has-text-centered">
-                    <p>まだ投稿はありません。是非投稿してみてください。</p>
-                </div>
-                {% endif %}
-                {% for q in Diary_list %}                
-                <div class="box">
-
-                    <article class="media">
-                        <div class="media-left">
-                        </div>
-                        <div class="media-content">
-                        <div class="content">
-                            <p>
-                            <strong>{{ q.title }}</strong> <small>@ {{ q.author.username }}</small> <small>{{q.date_created }}</small>
-                            <br>
-                            {{ q.body | truncatechars:300}}
-                            </p>
-                        </div>
-                        </div>
-                    </article>
-                </div>
-                {% endfor %}
-            </div>
+    <div class="column has-background-grey-light is-two-fifths">
+        <h1 class="title headline-red">Q＆A</h1>
+        {% if not Question_list %}
+        <div class="has-text-centered">
+            <p>まだ投稿はありません。<br>気軽に投稿してみてください。</p>
         </div>
+        {% endif %}
+
+        {% for q in Question_list %}                
+        <div class="box" onclick="location.href='{% url 'q_and_a:detail_question' q.uuid %}'" style="cursor: hand; cursor:pointer;">
+
+            <article class="media">
+                <div class="media-left">
+                    <div class="image is-48x48 has-text-centered">
+                        {% if q.is_solved %}
+                            <small><span class="hicomm-solved">解決済</span></small>
+                        {% else %}
+                            <small><span class="hicomm-notsolved">受付中</span></small>
+                        {% endif %}
+                        <br>
+                        <small style="color: darkgoldenrod"><i class="fal fa-lightbulb-on"></i> {{ q.point_good }}</small>
+                    </div>
+                </div>
+                <div class="media-content">
+                <div class="content">
+                    <p>
+                    <strong>{{ q.title }}</strong> <small>@{{ q.author.username }}</small> <small>{{ q.date_created }}</small>
+                    <br>
+                    {{ q.body | truncatechars:300 }}
+                    </p>
+                </div>
+                </div>
+            </article>
+        </div>
+        {% endfor %}
+
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            {% if Question_list.has_previous %}
+            <a class="pagination-previous" href="?p1={{ Question_list.previous_page_number }}">Previous</a>
+            {% endif %}
+            {% if Question_list.has_next %}
+            <a class="pagination-next" href="?p1={{ Question_list.next_page_number }}">Next</a>
+            {% endif %}
+            <ul class="pagination-list">
+                {% if Question_list.has_previous %}
+                    {% if Question_list.previous_page_number != 1 %}
+                    <li><a class="pagination-link" href="?p1=1">1</a></li>
+                    <li><i class="fas fa-ellipsis-h"></i></li>
+                    {% endif %}
+                    <li><a class="pagination-link" href="?p1={{ Question_list.previous_page_number }}">{{ Question_list.previous_page_number }}</a></li>
+                {% endif %}
+                <li><a class="pagination-link is-current" href="?p1={{ Question_list.number }}" >{{ Question_list.number }}</a></li>
+                {% if Question_list.has_next %}
+                    <li><a class="pagination-link" href="?p1={{ Question_list.next_page_number }}">{{ Question_list.next_page_number }}</a></li>
+                    {% if Question_list.next_page_number != Question_list.paginator.num_pages %}
+                    <li><i class="fas fa-ellipsis-h"></i></li>
+                    <li><a class="pagination-link" href="?p1={{ Question_list.paginator.num_pages }}">{{ Question_list.paginator.num_pages }}</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </nav>
     </div>
-    <div class="submenu column is-2">
+    <!-- knowledge　-->
+
+    <div class="column has-background-white-ter is-two-fifths">
+        <h1 class="title headline-blue">Knowledge</h1>
+        {% if not Diary_list %}
+        <div class="has-text-centered">
+            <p>まだ投稿はありません。是非投稿してみてください。</p>
+        </div>
+        {% endif %}
+        {% for q in Diary_list %}                
+        <div class="box">
+
+            <article class="media">
+                <div class="media-left">
+                </div>
+                <div class="media-content">
+                <div class="content">
+                    <p>
+                    <strong>{{ q.title }}</strong> <small>@ {{ q.author.username }}</small> <small>{{q.date_created }}</small>
+                    <br>
+                    {{ q.body | truncatechars:300}}
+                    </p>
+                </div>
+                </div>
+            </article>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="column">
         Hiokimochi Timeline
         <div class="text">
             <ul>

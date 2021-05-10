@@ -11,6 +11,8 @@ urlpatterns = [
     path("post_article", login_required(views.post_diary), name="post_article"), 
     path("questions/<uuid:question_id>/", views.detail_question, name="detail_question"),
     path("article/<uuid:article_id>/", views.detail_question, name="detail_article"),
+    #path("contents/<uuid:user_id>/<uuid:content_id>", ),
+
     path("ajax/save_draft", login_required(views.ajax_save_draft)),
     
 ]

@@ -45,6 +45,7 @@ class Question(PostItem):
     title = models.CharField(default="", max_length=512)
     tags = models.ManyToManyField(Tag)
     is_solved = models.BooleanField(default=False)
+    num_answers = models.IntegerField(default=0)
 
 class Answer(PostItem):
     reply_to = models.ForeignKey(Question, on_delete=models.CASCADE)

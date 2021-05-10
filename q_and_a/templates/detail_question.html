@@ -1,6 +1,160 @@
 {% extends "main_frame.html" %}
 {% block content %}
 
-under construction
+<!-- 質問内容 -->
+<section class="hero has-background-light">
+    <div class="hero-body">
+        <p class="title">
+            {{ item.title }}
+        </p>
+        <p class="subtitle">
+            {{ item.date_published }}
+        </p>
+    </div>
+</section>
+<section class="hero-body">
+    <div id = qtext>
+        {{ item.body }}
+
+    </div>
+    <hr>
+    <div class="level">
+        <div class="level-left">
+            <p class="level-item hicomm_button_respondent">
+                <button class="detail_question_button"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
+                <button class="detail_question_button">回答する</button>
+            </p>
+        </div>
+        <div class="level-right">
+            <p class="level-item">
+                written by:&nbsp;<a>{{ item.author.username }}</a>
+                           
+                <figure class="image is-32x32">
+                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                </figure>  
+            </p>
+        </div>
+    </div>
+    
+</section>
+<!-- 回答 -->
+<section class="hero-body">
+    <p class="title is-4 has-text-centered">回答　<strong class="has-text-danger">{{ answers|length }}</strong> 件</p>
+
+    <!-- 回答本体 -->
+    {% if answers %}
+    <!-- ソート用のタブ -->
+    <div class="tabs is-right">
+        <ul>
+          <li class="is-active"><a>Goodの多い順</a></li>
+          <li><a>投稿の早い順</a></li>
+          <li><a>あと何か</a></li>
+        </ul>
+    </div>
+        {% for answer in answers %}
+        <div class="card">        
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-128x128">
+                            <div class="box has-text-centered" {% if answer.is_BestAnswer %}style="background-color: #FDD"{% endif %}> 
+                                <p class="subtitle is-4 has-text-weight-bold is-family-primary">
+                                {% if answer.point_good > 0 %}+{% endif %}{{ answer.point_good }}
+                                </p>
+                            </div>
+                            {% if answer.is_BestAnswer %}
+                            <p class="tag is-danger"><i class="fas fa-award"></i>　ベストアンサー</p>
+                            {% endif %}
+                        </figure>
+                    </div>
+                    <div class="media-content atexts">
+                        {{ answer.body }}
+                    </div>
+                </div>
+
+                <div class="content">
+                    <hr>
+                    <div class="level">
+                        <div class="level-left hicomm_button_respondent">
+                            <p class="level-item hicomm_button_respondent">
+                                <button class="detail_question_button">+ Good</button>
+                                <button class="detail_question_button">コメント</button>
+                            
+                            {% if item.author.username ==  request.user.username %}
+                                {% if item.is_solved %}
+
+                                {% else %}
+                                <button class="detail_question_button">ベストアンサーにする</button></p>
+                                {% endif %}
+                            {% endif %}
+                            </p>
+                        </div>
+                        <div class="level-right">
+                            <p class="level-item">
+                                written by:&nbsp;<a>{{ answer.author.username }}</a>
+                                <figure class="image is-32x32">
+                                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                                </figure>  
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <br>
+        {% endfor %}
+    {% else %}
+    <hr>
+    <p> まだ回答はありません </p>
+    {% endif %}
+
+    <!-- 回答入力部 -->
+
+</section>
+
+<script>
+    $(document).ready(function(){
+        var qtext = document.getElementById('qtext');
+        var atexts = document.getElementsByClassName("atexts")
+
+        /* hilight.jsの例外処理 */
+        qtext.innerHTML = qtext.innerHTML.replace(/```python3/g, "```python");
+
+        /* templateで８spaceぶんのインデントがあるため */
+        const txt = marked(qtext.innerHTML.substr(9));
+        qtext.innerHTML = txt;
+
+        /* answerでも同じ処理 */
+        for(var i=0; i<atexts.length; ++i){
+            atexts[i].innerHTML = marked(atexts[i].innerHTML.replace(/```python3/g, "```python").substr(25));
+        }
+
+        /* コードハイライトの適用 */
+        var nodelist = document.querySelectorAll('pre code');
+        var node = Array.prototype.slice.call(nodelist,0); 
+        node.forEach(function(block){
+            hljs.highlightElement(block);
+        });
+        /* bulmaのpreの背景色とかぶるので、それを無効にする */
+        for(var i = 0; i<qtext.childElementCount; ++i){
+            if(qtext.children[i].nodeName == "PRE"){
+                qtext.children[i].setAttribute("style", "background-color: #FFF");
+            }
+        }
+        for(var j = 0; j<atexts.length; ++j){
+            for(var i = 0; i<atexts[j].childElementCount; ++i){
+                if(atexts[j].children[i].nodeName == "PRE"){
+                    atexts[j].children[i].setAttribute("style", "background-color: #FFF");
+                }
+            }
+        }
+        /* & -> &amp;の修正 */
+        document.querySelectorAll("code").forEach(function(element) {
+            element.innerHTML = element.innerHTML.replace(/&amp;/g, "&");
+        });
+    });
+</script>
 
 {% endblock %}
