@@ -1,19 +1,41 @@
 {% extends "main_frame.html" %}
+{% block title %}
+{{item.title }} - 質問 | {{ block.super }}
+{% endblock title %}
+
 {% block content %}
 
 <!-- 質問内容 -->
 <section class="hero has-background-light">
     <div class="hero-body">
-        <p class="title">
-            {{ item.title }}
-        </p>
-        <p class="subtitle">
-            {{ item.date_published }}
-        </p>
+        <div class="columns">
+            <div class="column is-1" style="border-right: solid 1px #888;">
+                {% if item.is_solved %}
+                    <span class="hicomm-solved">解決済</span>
+                {% else %}
+                    <span class="hicomm-notsolved">受付中</span>
+                {% endif %}
+                <br>
+                <p class="icon-text is-size-3" style="color: darkgoldenrod;"><i class="fal fa-lightbulb-on"></i> {{ item.point_good }}</p>
+                <small>{{ item.date_published }}</small>
+            </div>
+            <div class="column">
+                <p class="title">
+                    {{ item.title }}
+                </p>
+
+
+                <div class="tags">
+                    <span class="tag is-warning">tag</span>
+                    <span class="tag is-warning">tag</span>
+                    <span class="tag is-warning">tag</span>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 <section class="hero-body">
-    <div id = qtext>
+    <div id = qtext class="hicomm_result_view">
         {{ item.body }}
 
     </div>
@@ -21,8 +43,13 @@
     <div class="level">
         <div class="level-left">
             <p class="level-item hicomm_button_respondent">
-                <button class="detail_question_button"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
-                <button class="detail_question_button">回答する</button>
+                <button class="detail_question_button" id="good_question"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
+                {% for ans in item.answer_set.all %}
+                    {% if ans.author == request.user %}
+                        {%%}<!--TODO-->
+                    {% endif %}
+                {% endfor %}
+                <button class="detail_question_button" id="id_button_input_answer">回答する</button>
             </p>
         </div>
         <div class="level-right">
@@ -37,6 +64,26 @@
     </div>
     
 </section>
+
+<!-- 回答入力部 -->
+{% if  user.is_authenticated  %}
+<div id=id_inputzone_answer class="columns" style="display: none;">
+    <div class="column is-11 is-offset-1">
+        <div id="editor">
+            <textarea class="" id="id_body" onkeyup="markdown2html()"># hoge</textarea>
+            <div class="hicomm_result_view" id="result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc"></div>
+        </div>
+        <nav class="level">
+            <div class="level-left">
+
+            </div>
+            <div class="level-right">
+                <button class="button is-large is-primary" id="id_button_post_answer">投稿する</button>
+            </div>
+        </nav>
+    </div>
+</div>
+{% endif %}
 <!-- 回答 -->
 <section class="hero-body">
     <p class="title is-4 has-text-centered">回答　<strong class="has-text-danger">{{ answers|length }}</strong> 件</p>
@@ -72,10 +119,10 @@
                     </div>
                 </div>
 
-                <div class="content">
+                <div>
                     <hr>
                     <div class="level">
-                        <div class="level-left hicomm_button_respondent">
+                        <div class="level-left">
                             <p class="level-item hicomm_button_respondent">
                                 <button class="detail_question_button">+ Good</button>
                                 <button class="detail_question_button">コメント</button>
@@ -89,7 +136,11 @@
                             {% endif %}
                             </p>
                         </div>
+                        
                         <div class="level-right">
+                            <p class="level-item">
+                                <small> {{answer.date_published}}</small>
+                            </p>
                             <p class="level-item">
                                 written by:&nbsp;<a>{{ answer.author.username }}</a>
                                 <figure class="image is-32x32">
@@ -154,6 +205,76 @@
         document.querySelectorAll("code").forEach(function(element) {
             element.innerHTML = element.innerHTML.replace(/&amp;/g, "&");
         });
+
+        /* ボタン制御 */
+        document.getElementById("good_question").addEventListener("click", function(){
+            {% if  user.is_authenticated  %}
+            this.className = "detail_question_button button is-loading"
+            this.setAttribute("style", "pointer-events: none;");
+
+            var element = this;
+            $.ajax({
+                url: "{% url 'q_and_a:ajax_submit_good' %}",
+                headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                method: "POST",
+                data: {
+                    type: "question",
+                    value: 1,
+                    uuid: "{{ item.uuid }}",
+                    user: "{{ request.user.username }}",
+                },
+                timeout: 5000,
+                contentType: "application/json",
+            })
+            .done(function(data){
+                alert(data);
+                element.className = "detail_question_button_pushed";
+                element.setAttribute("style", "pointer-events: auto");
+            });
+            {% else %}
+            window.location.assign("{% url 'account_manager:login' %}");
+            {% endif %}
+            
+        });
+        
+        $("#id_button_input_answer").click(function(){
+            {% if  user.is_authenticated  %}
+            if (this.className == "detail_question_button"){
+                this.className = "detail_question_button_pushed";
+                this.innerHTML = "回答をやめる";
+            }else{
+                this.className = "detail_question_button";
+                this.innerHTML = "回答する";
+            }
+            
+            $("#id_inputzone_answer").slideToggle("slow");
+            {% else %}
+            window.location.assign("{% url 'account_manager:login' %}");
+            {% endif %}
+
+        });
+
+        $("#id_button_post_answer").click(function(){
+            $.ajax({
+                url: "{% url 'q_and_a:post_answer' item.uuid %}",
+                headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                method: "POST",
+                data: {
+                    body: $("#id_body")[0].value
+                },
+                timeout: 5000,
+                contentType: "application/json",
+            })
+            .done(function(data){
+                if(data == "true"){        
+                    location.reload();
+                    window.scrollTo(0,0);
+                }else{
+                    alert(data);
+                }
+            });
+        });
+        
     });
 </script>
 

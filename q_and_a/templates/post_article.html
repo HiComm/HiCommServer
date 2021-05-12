@@ -1,4 +1,9 @@
 {% extends "main_frame.html" %}
+{% block title %}
+ナレッジを投稿する | {{ block.super }}
+{% endblock title %}
+
+
 {% block content %}
 <script>
 $(document).ready(function(){
@@ -77,7 +82,7 @@ window.onbeforeunload = function(event){
     <div class="content" id="editor">
         {{ form.body }}
         <!--<textarea id="input" onkeyup="markdown2html()"># hoge</textarea>-->
-        <div id="result"></div>
+        <div id="result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc"></div>
 
         <!-- markdownチートシートの表示 -->
         <article id="cheat-sheet" class="message is-hidden">

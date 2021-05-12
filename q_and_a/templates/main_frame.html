@@ -12,14 +12,17 @@
         <!-- marked.js: マークダウンのプレビュー表示用のスクリプト -->
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <!-- ソースコードのシンタックスハイライト用のスクリプト -->
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
         <!-- ショートカットキーを実装するためのスクリプト -->
         <script type="text/javascript" src="{% static "js/shortcut.js" %}"></script>
 
         <!-- マークダウンエディタ用の自作ボタン -->
         <script src="{% static 'js/markdown_buttons.js' %}"></script>
         <script src="{% static 'js/markdown.js' %}"></script>
+
+        <!-- utility -->
+        <script src="{% static 'js/utility.js' %}"></script>
 
         <!-- カスタム用のCSS -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/customize_bulma.css' %}">
@@ -28,7 +31,7 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/custom_style.css' %}">
 
 
-        <title>HiComm</title>
+        <title>{% block title %}HiComm{% endblock title %}</title>
     </head>
 
     <body>

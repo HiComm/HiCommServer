@@ -47,13 +47,15 @@ class Question(PostItem):
     is_solved = models.BooleanField(default=False)
     num_answers = models.IntegerField(default=0)
 
+    good_posted_by = models.ManyToManyField(CustomUser, blank=True, related_name="q_good_posted_by")
 class Answer(PostItem):
     reply_to = models.ForeignKey(Question, on_delete=models.CASCADE)
     is_BestAnswer = models.BooleanField(default=False)
-
+    good_posted_by = models.ManyToManyField(CustomUser, blank=True, related_name="a_good_posted_by")
 class Diary(PostItem):
     title = models.CharField(default="", max_length=512)
     tags = models.ManyToManyField(Tag)
+    good_posted_by = models.ManyToManyField(CustomUser, blank=True, related_name="d_good_posted_by")
     #related_to = models.ForeignKey(PostItem, on_delete=models.CASCADE, related_name="%(class)s_related_to",  null=True, blank=True, default=None)
 
 

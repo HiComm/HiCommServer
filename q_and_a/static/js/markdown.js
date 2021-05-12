@@ -63,7 +63,7 @@ function removeShortcutKey() {
 }
 
 function markdown2html() {
-    document.getElementById('result').innerHTML =
+    document.getElementById('result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc').innerHTML =
     marked(document.getElementById('id_body').value);
 
     //===============================================
@@ -71,7 +71,7 @@ function markdown2html() {
     //@author matsutake
     //@date   2020/3/9
     //===============================================
-    var nodelist = document.querySelectorAll('pre_code');
+    var nodelist = document.querySelectorAll('pre code');
     var node = Array.prototype.slice.call(nodelist,0); 
     node.forEach(function(block){
         hljs.highlightBlock(block);

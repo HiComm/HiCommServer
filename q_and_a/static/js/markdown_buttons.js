@@ -94,7 +94,7 @@ function header_button(){
 function question_button() {
     document.getElementById('id_body').focus();
 
-    var result = document.getElementById('result');
+    var result = document.getElementById('result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc');
     var sheet = document.getElementById('cheat-sheet');
 
     if (sheet.classList.contains('is-hidden')) {
@@ -107,5 +107,5 @@ function question_button() {
 
 function hiddenCheatSheet() {
     document.getElementById('cheat-sheet').classList.add('is-hidden');
-    document.getElementById('result').style.width = '50%';
+    document.getElementById('result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc').style.width = '50%';
 }

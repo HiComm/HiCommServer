@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "account_manager",
     "q_and_a",
-    "knowledge",
 ]
 
 MIDDLEWARE = [

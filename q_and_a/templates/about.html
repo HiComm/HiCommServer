@@ -1,38 +1,44 @@
 {% extends "main_frame.html" %}
+{% block title %}
+About | {{ block.super }}
+{% endblock title %}
+
 {% block content %}
 <div class="has-text-centered has-text-weight-medium">
 <h1 class="title">HiCommってなに？</h1>
 <hr>
+<h2 class="subtitle has-text-info">理念</h2>
 <p>
-    知見をさくっとアウトプットして、忘れても読めば思い出すようにしたい！<br>
-    社内で困ったとき、過去の上手くいった事例参照したい！ or 強いマンに気軽に助けを求めたい！<br>
+    知見をさくっとアウトプットして、忘れても読めば思い出すようにしたい。<br>
+    社内で困ったとき、過去の上手くいった事例参照したい。<br>
+    強いマンに気軽に助けを求めたい！<br>
     <br>
     そんな人向けの、知識と人をつなげるサービスです。
 </p>
 <hr>
-<h2 class="subtitle has-text-info">社内で同じようなことをやっている人、いないかな？（案外いる）</h2>
-<p></p>
-
-<h2 class="subtitle">「先輩に基本的なところから説明してもらうわけにはい」</h2>
+<h2 class="subtitle has-text-info">社内で同じようなことをやっている人、いないかな？</h2>
 <p>
-
-<br>
-でも、ベテランからすれば、<br>
-<br>
-wordでインデントのズレを気にしながら技術報告書を書くのは大変ですよね。<br>
-社内勉強会で共有した知見も、後輩たちや別の部署の人に共有するとなると繰り返す必要があって面倒ですよね。<br>
-<br>
-That's why HiComm exists.
+    googleで検索しても、コピペ業者サイトやアフィブログばかりヒットする・・・😢<br>
+    残念になってしまった現代で信頼できるのは<strong>社内の人たち</strong>しかいません！<sup><a title="諸説あります"">※</a></sup><br>
+    <br>
+    ノウハウの宝庫の技術報告書、欲しい情報はそこにあるのです。<br>
+    でも検索性がひどいですよね・・・？<br>
+    <br>
+    勉強会の知見も、わざわざドキュメント化するのは大変ですよね😥<br>
+    <br>
+    <strong>HiComm</strong>におまかせください😁
 </p>
 <br>
 <hr>
-
 <br>
+<h2 class="subtitle has-text-info">ぶっちゃけ</h2>
 <p>
-HiCommは初心者の強い味方、StackOverflow、Qiita、Yahoo知恵袋、Teratailの社内版を想定しています。<br>
-<br>
-誰でも閲覧、検索できます。（予定）<br>
-投稿にはアカウント登録が必要です。(コンテンツの編集・管理のため)
+    HiCommは初心者の強い味方、<br>
+    StackOverflow、Qiita、Yahoo知恵袋、Teratail、・・・<br>
+    の社内版を想定して作られました。<sup><a title="Qiita Teams入れたらええんちゃう">※</a></sup><br><br>
+    <br>
+    誰でも閲覧、検索できます。<br>
+    編集・削除の限定のため、投稿には👇アカウント登録👇が必要です。
 </p>
 <br>
 <hr>
@@ -45,7 +51,6 @@ HiCommで快適なナレッジマネジメントをして、クリエイティ�
         <button class="button is-success">Sign Up</button>
     </a>
 </div>
-
 </div>
 
 {% endblock %}
