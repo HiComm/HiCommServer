@@ -16,7 +16,9 @@
                     <span class="hicomm-notsolved">受付中</span>
                 {% endif %}
                 <br>
-                <p class="icon-text is-size-3" style="color: darkgoldenrod;"><i class="fal fa-lightbulb-on"></i> {{ item.point_good }}</p>
+                <p class="icon-text is-size-3" style="color: darkgoldenrod;">
+                    <i class="fal fa-lightbulb-on"></i><span id="id_value_good_{{item.uuid}}"> {{ item.point_good }}</span>
+                </p>
                 <small>{{ item.date_published }}</small>
             </div>
             <div class="column">
@@ -43,14 +45,20 @@
     <div class="level">
         <div class="level-left">
             <p class="level-item hicomm_button_respondent">
+                {% if good_posted %}
+                <button class="detail_question_button_pushed" id="good_question"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
+                {% else %}
                 <button class="detail_question_button" id="good_question"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
-                {% for ans in item.answer_set.all %}
-                    {% if ans.author == request.user %}
-                        {%%}<!--TODO-->
-                    {% endif %}
-                {% endfor %}
+                {% endif %}
+                
+                {% if already_answered %}
+                <button class="detail_question_button_pushed" id="id_button_input_answer">回答済</button>
+                {% else %}
                 <button class="detail_question_button" id="id_button_input_answer">回答する</button>
+                {% endif %}
+                
             </p>
+            <p class="level-item has-text-danger is-small" id="id_emsg_question_button"></p>
         </div>
         <div class="level-right">
             <p class="level-item">
@@ -71,7 +79,7 @@
     <div class="column is-11 is-offset-1">
         <div id="editor">
             <textarea class="" id="id_body" onkeyup="markdown2html()"># hoge</textarea>
-            <div class="hicomm_result_view" id="result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc"></div>
+            <div class="hicomm_result_view" id="resulいt_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc"></div>
         </div>
         <nav class="level">
             <div class="level-left">
@@ -114,7 +122,7 @@
                             {% endif %}
                         </figure>
                     </div>
-                    <div class="media-content atexts">
+                    <div class="media-content atexts hicomm_result_view">
                         {{ answer.body }}
                     </div>
                 </div>
@@ -209,50 +217,82 @@
         /* ボタン制御 */
         document.getElementById("good_question").addEventListener("click", function(){
             {% if  user.is_authenticated  %}
-            this.className = "detail_question_button button is-loading"
-            this.setAttribute("style", "pointer-events: none;");
 
-            var element = this;
-            $.ajax({
-                url: "{% url 'q_and_a:ajax_submit_good' %}",
-                headers: {"X-CSRFToken" : getCookie("csrftoken")},
-                method: "POST",
-                data: {
-                    type: "question",
-                    value: 1,
-                    uuid: "{{ item.uuid }}",
-                    user: "{{ request.user.username }}",
-                },
-                timeout: 5000,
-                contentType: "application/json",
-            })
-            .done(function(data){
-                alert(data);
-                element.className = "detail_question_button_pushed";
-                element.setAttribute("style", "pointer-events: auto");
-            });
+                this.className = "detail_question_button button is-loading"
+                this.setAttribute("style", "pointer-events: none;");
+                
+
+                var element = this;
+                $.ajax({
+                    url: "{% url 'q_and_a:ajax_submit_good' %}",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    data: {
+                        type: "question",
+                        uuid: "{{ item.uuid }}",
+                        user: "{{ request.user.username }}",
+                    },
+                    timeout: 5000,
+                    contentType: "application/json",
+                })
+                .done(function(data){
+                    $("#id_emsg_question_button")[0].innerText = ""
+                    if(data.substr(0,3) == "02E"){
+                        $("#id_value_good_{{item.uuid}}")[0].innerText = " " + data.substr(3);
+                        element.className = "detail_question_button";
+                        element.setAttribute("style", "pointer-events: auto");
+                    }
+                    else if(data.substr(0,3) == "01E"){
+                        $("#id_value_good_{{item.uuid}}")[0].innerText = " " + data.substr(3);
+                        element.className = "detail_question_button_pushed";
+                        element.setAttribute("style", "pointer-events: auto");
+                    }
+                    else{
+                        var msg = "";
+                        switch(data){
+                            case "same_person":
+                                msg = "自分の投稿には適用できません。";
+                                break;
+                            case "error":
+                                msg = "エラーが発生しました。";
+                                break;
+                            default:
+                                break;
+                        }
+                        $("#id_emsg_question_button")[0].innerText = msg;
+                        element.className = "detail_question_button{%if good_posted %}_pushed{%endif%}";
+                        element.setAttribute("style", "pointer-events: auto");
+                    }
+                });
+
             {% else %}
-            window.location.assign("{% url 'account_manager:login' %}");
+                window.location.assign("{% url 'account_manager:login' %}");
             {% endif %}
             
         });
-        
+
+        {% if already_answered %}
+        $("#id_button_input_answer").css("pointer-events", "none");
+        {% else %}
         $("#id_button_input_answer").click(function(){
             {% if  user.is_authenticated  %}
-            if (this.className == "detail_question_button"){
-                this.className = "detail_question_button_pushed";
-                this.innerHTML = "回答をやめる";
-            }else{
-                this.className = "detail_question_button";
-                this.innerHTML = "回答する";
-            }
-            
-            $("#id_inputzone_answer").slideToggle("slow");
+
+                if (this.className == "detail_question_button"){
+                    this.className = "detail_question_button_pushed";
+                    this.innerHTML = "回答をやめる";
+                }else{
+                    this.className = "detail_question_button";
+                    this.innerHTML = "回答する";
+                }
+                
+                $("#id_inputzone_answer").slideToggle("slow");
+                
             {% else %}
             window.location.assign("{% url 'account_manager:login' %}");
             {% endif %}
 
         });
+        {% endif %}
 
         $("#id_button_post_answer").click(function(){
             $.ajax({

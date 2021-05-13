@@ -16,6 +16,7 @@ urlpatterns = [
     path("error/", views.ErrorPage.as_view(), name="error"),
     #path("contents/<uuid:user_id>/<uuid:content_id>", ),
 
-    path("ajax/save_draft", login_required(views.ajax_save_draft)),
+    path("ajax/save_draft", login_required(views.ajax_save_draft), name="ajax_save_draft"),
+    path("ajax/get_drafts", login_required(views.ajax_get_drafts), name="ajax_get_drafts"),
     
 ]

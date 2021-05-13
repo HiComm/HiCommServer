@@ -14,6 +14,9 @@ from django.http import HttpResponseRedirect
 
 from django.core.paginator import Paginator
 from django.http import QueryDict
+from django.core import serializers
+
+import json
 
 # Create your views here.
 class IndexView(ListView):
@@ -28,8 +31,8 @@ class IndexView(ListView):
 
     def get(self, request, *args, **kwargs):
         ctx = {}
-        all_q_list = Question.objects.all().order_by("-date_created")
-        all_d_list = Diary.objects.all().order_by("-date_created")
+        all_q_list = Question.objects.filter(is_draft=False).order_by("-date_created")
+        all_d_list = Diary.objects.filter(is_draft=False).order_by("-date_created")
         
         n_posts_per_page = 4
         paginator_q = Paginator(all_q_list, n_posts_per_page)
@@ -57,14 +60,21 @@ def post_question(request):
     ctx = {}
 
     if request.method == 'POST':#送信時
+
         form = PostQuestionForm(request.POST)
         if form.is_valid():
             item = form.save(commit=False)
             item.author = request.user
 
+            if request.POST["dftid"] != "initial":
+                item.uuid = request.POST["dftid"]
+
             item.is_draft = False
             item.is_solved = False
             item.date_created = timezone.now()
+            item.date_modified = timezone.now()
+            item.date_published = timezone.now()
+
             item.save()
 
             return redirect(reverse_lazy('q_and_a:index'))
@@ -110,8 +120,24 @@ def detail_question(request, question_id):
     item = Question.objects.get(uuid=question_id)
     answers = Answer.objects.filter(reply_to=question_id).order_by("-point_good", "-date_published")
 
+    is_already_answered = False
+    for ans in answers:
+        if request.user == ans.author:
+            is_already_answered = True
 
-    context = {"item": item, "answers": answers}
+    is_good_posted = False
+    for usr in item.good_posted_by.all():
+        print(usr)
+        if request.user == usr:
+            is_good_posted = True
+    print(is_good_posted)
+
+    context = {
+        "item": item, 
+        "answers": answers,
+        "already_answered": is_already_answered,
+        "good_posted": is_good_posted,
+    }
 
     return render(request, template_name, context)
 
@@ -134,12 +160,17 @@ def ajax_submit_good(request):
             if item.author.username == rqst["user"]:#投稿と同一人物はいいねできない
                 return HttpResponse("same_person")
             
-            if user in item.good_posted_by.all():
-                return HttpResponse("double_post")
-            item.good_posted_by.add(user)
-            item.point_good += 1
-            item.save()
-            return HttpResponse("true")
+            if user in item.good_posted_by.all():#いいねしている場合→減算
+                item.good_posted_by.remove(user)
+                item.point_good -= 1
+                item.save()
+                return HttpResponse("02E"+str(item.point_good))
+
+            else:#いいねしていない場合
+                item.good_posted_by.add(user)
+                item.point_good += 1
+                item.save()
+                return HttpResponse("01E"+str(item.point_good))
         
         except Exception as e:
             print(e)
@@ -169,37 +200,54 @@ def ajax_post_answer(request, question_id):
 
 
 def ajax_save_draft(request):
-    model = Question
-    template_name = "post_question.html"
-    form_class = PostQuestionForm
-
-    print(request.POST)
-
-    #item = form.save(commit=False)
 
     if request.method == "POST":
-        form = PostQuestionForm(request.POST)
-        
-        if form.is_valid():
-            if Question.objects.filter(pk=request.POST["id"]).exists():
-                item = Question.objects.get(pk=request.POST.pk)
-                item.author = request.user
-                item.is_draft = True
-                item.date_created = timezone.now()
-                item.save()
+        try:
+            rqst = QueryDict(request.body, encoding='utf-8')
 
+            if rqst["id"] == "initial":
+                ans = Question.objects.create(author=request.user, title=rqst["title"], body=rqst["body"], is_draft=True)
+                ans.date_created = timezone.now()
+                ans.save()
             else:
-                item = form.save(commit=False)
-                item.author = request.user
-                item.is_draft = True
-                item.date_created = timezone.now()
-                item.save()
+                ans = Question.objects.get(uuid=rqst["id"])
+                ans.date_modified = timezone.now()
+                ans.title = rqst["title"]
+                ans.body = rqst["body"]
+                ans.save()
 
-            return HttpResponse("ok")
+            uuid = str(ans.uuid.hex)
+            uuid = "{}-{}-{}-{}-{}".format(uuid[0:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:])
 
-        else:
-            return HttpResponseBadRequest()
+            return HttpResponse(uuid)
+        
+        except Exception as e:
+            return HttpResponseBadRequest("internal server error")
+        
+    else:
+        return HttpResponseBadRequest()
 
+def ajax_get_drafts(request):
+    output = []
+    if request.method == "POST":
+        try:
+            drafts = Question.objects.filter(author=request.user, is_draft=True).order_by("-date_modified")
+            #draft_list = serializers.serialize('json', drafts)
+            for draft in drafts:
+               data = {}
+               uuid = str(draft.uuid.hex)
+               data["uuid"] = "{}-{}-{}-{}-{}".format(uuid[0:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:])
+               data["date_created"] = str(draft.date_created)
+               data["date_modified"] = str(draft.date_modified)
+               data["title"] = draft.title
+               data["body"] = draft.body
+               output.append(data)
+            
+            return HttpResponse(json.dumps(output))
+            
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest("internal server error")
         
     else:
         return HttpResponseBadRequest()

@@ -137,29 +137,103 @@ window.onbeforeunload = function(event){
                     headers: {"X-CSRFToken" : getCookie("csrftoken")},
                     method: "POST",
                     data: {
-                        id : "{{ id }}",
+                        id : $("input[name='dftid']")[0].value,
                         title: $("#id_title")[0].value,
                         body: $("#id_body")[0].value,
                     },
                     timeout: 10000,
-                    dataType: "json",
-            }).done( function(rcv) {
-                alert("done" + rcv);
-                $("#id_body")[0].value += rcv;
+                    contentType: "application/json",
+            })
+            .done(function(data) {
+                data = new String(data);
+                $("input[name='dftid']")[0].value = data;
             });
+        }
+        
+        function toggleDraftMenu(){
+            $("#id_draft_table").toggleClass("is-active");
+            
+            if($("#id_draft_table").hasClass("is-active")){//表示した場合
+                $.ajax({
+                    url: "ajax/get_drafts",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    timeout: 10000,
+                    contentType: "application/json",
+                })
+                .done(function(data){//data->table
+                    var html = ""
+                    var jsondata = JSON.parse(data);
+                    for(var i=0; i<jsondata.length; ++i){
+                        var content = jsondata[i];
+                        
+
+                    }
+                });
+            }
         }
 
     </script>
     
+    <input type="hidden" name="dftid" value="initial">
         
-    <div class="footer_toolbar_container has-background-link-dark">
-        <div class="footer_toolbar">
+    <div class="footer_toolbar_container has-background-link-dark level">
+        <div class="level-left">
+            <button class="button is-rounded is-link level-item" type="button">ファイルから記入</button>
+            <button class="button is-rounded is-link level-item" type="button" onclick="toggleDraftMenu()">下書きから記入</button>
+        </div>
+        <div class="footer_toolbar level-right">
             <button class="button is-large is-primary footer_toolbar_button" type="submit">投稿する</button>
             <button class="button is-large is-info is-light footer_toolbar_button" type="button" onclick="save_draft()" formaction="ajax/save_draft">下書き保存</button>
       </div>
     </div>
     </form>
+
 </section>
+
+<!-- draft list -->
+<div id="id_draft_table" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">下書きを選んでください</p>
+        <button class="delete" aria-label="close" onclick='toggleDraftMenu()'></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="has-text-centered">
+            <i class="fad fa-spinner-third fa-spin fa-5x"></i>
+        </div>
+        <div><!--table-->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><abbr title="Created">作成日時</abbr></th>
+                        <th><abbr title="Modified">最終更新</abbr></th>
+                        <th><abbr title="Title">タイトル</abbr></th>
+                        <th><abbr title="Body">本文</abbr></th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th><abbr title="Created">作成日時</abbr></th>
+                        <th><abbr title="Modified">最終更新</abbr></th>
+                        <th><abbr title="Title">タイトル</abbr></th>
+                        <th><abbr title="Body">本文</abbr></th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                  <tr>
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success">選択</button>
+        <button class="button" onclick="toggleDraftMenu()">キャンセル</button>
+      </footer>
+    </div>
+  </div>
 {% endblock %}
 
 {%block footermenu %}
