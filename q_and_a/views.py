@@ -116,30 +116,34 @@ def post_diary(request):
         return render(request, template_name, ctx)
 
 def detail_question(request, question_id):
-    template_name = "detail_question.html"
-    item = Question.objects.get(uuid=question_id)
-    answers = Answer.objects.filter(reply_to=question_id).order_by("-point_good", "-date_published")
+    try:
+        template_name = "detail_question.html"
+        item = Question.objects.get(uuid=question_id)
+        answers = Answer.objects.filter(reply_to=question_id).order_by("-point_good", "-date_published")
 
-    is_already_answered = False
-    for ans in answers:
-        if request.user == ans.author:
-            is_already_answered = True
+        is_already_answered = False
+        for ans in answers:
+            if request.user == ans.author:
+                is_already_answered = True
 
-    is_good_posted = False
-    for usr in item.good_posted_by.all():
-        print(usr)
-        if request.user == usr:
-            is_good_posted = True
-    print(is_good_posted)
+        is_good_posted = False
+        for usr in item.good_posted_by.all():
+            print(usr)
+            if request.user == usr:
+                is_good_posted = True
+        print(is_good_posted)
 
-    context = {
-        "item": item, 
-        "answers": answers,
-        "already_answered": is_already_answered,
-        "good_posted": is_good_posted,
-    }
+        context = {
+            "item": item, 
+            "answers": answers,
+            "already_answered": is_already_answered,
+            "good_posted": is_good_posted,
+        }
 
-    return render(request, template_name, context)
+        return render(request, template_name, context)
+    except Exception as e:
+        print(e)
+        return redirect(reverse_lazy("q_and_a:error"))
 
 def detail_diary(request, article_id):
     template_name = "detail_question.html"#あとでかえる
@@ -191,7 +195,9 @@ def ajax_post_answer(request, question_id):
             return HttpResponse("null forbidden")
 
         ans = Answer.objects.create(author=request.user, reply_to=question, body=rqst["body"])
+        question.num_answers += 1
         ans.save()#いる？
+        question.save()
 
         return HttpResponse("true")
         #return redirect(reverse_lazy('q_and_a:detail_question', args=[question_id]))
@@ -211,6 +217,11 @@ def ajax_save_draft(request):
                 ans.save()
             else:
                 ans = Question.objects.get(uuid=rqst["id"])
+
+                #自分のものである認証(勝手に書き換えないように)
+                if ans.author != request.user:
+                    return redirect(reverse_lazy("q_and_a:error"))
+
                 ans.date_modified = timezone.now()
                 ans.title = rqst["title"]
                 ans.body = rqst["body"]
@@ -227,7 +238,7 @@ def ajax_save_draft(request):
     else:
         return HttpResponseBadRequest()
 
-def ajax_get_drafts(request):
+def ajax_get_q_drafts(request):
     output = []
     if request.method == "POST":
         try:

@@ -31,11 +31,24 @@
                 <div class="media-content">
                 <div class="content">
                     <p>
-                    <strong>{{ q.title }}</strong> <small>@{{ q.author.username }}</small> <small>{{ q.date_created }}</small>
+                    <strong>{{ q.title | truncatechars:70 }}</strong><br>
+                    <small>@{{ q.author.username }}</small> <small>{{ q.date_created }}</small>
+
+                    <div>
+                    {% for tag in q.tags.all %}
+                        {{ tag.name }}
+                    {% endfor %}
+                    </div>
                     <br>
-                    {{ q.body | truncatechars:300 }}
+                    <small>{{ q.body | truncatechars:140 }}</small>
                     </p>
                 </div>
+                </div>
+                <div class="media-right">
+                    <div class="image is-48x48 has-text-centered">
+                        <small class="hicomm-n-answers">回答数</small>
+                        <p>{{ q.num_answers }} 件</p>
+                    </div>
                 </div>
             </article>
         </div>

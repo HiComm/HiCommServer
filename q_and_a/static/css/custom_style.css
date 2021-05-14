@@ -23,8 +23,6 @@
     /*width: 60%;*/
 }
 
-
-
 /* hicomm custom */
 
 .hicomm-solved{
@@ -40,6 +38,13 @@
     border-radius: 3px;
     color: #4ec4d3;
 }
+
+.hicomm-n-answers{
+    border: solid 1px yellowgreen;
+    border-radius: 3px;
+    color: yellowgreen;
+}
+
 
 .hicomm_button_respondent {
     text-align: right; font-size: 15px;

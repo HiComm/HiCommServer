@@ -46,9 +46,9 @@
         <div class="level-left">
             <p class="level-item hicomm_button_respondent">
                 {% if good_posted %}
-                <button class="detail_question_button_pushed" id="good_question"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
+                <button class="detail_question_button_pushed" id="id_good_question"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
                 {% else %}
-                <button class="detail_question_button" id="good_question"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
+                <button class="detail_question_button" id="id_good_question"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
                 {% endif %}
                 
                 {% if already_answered %}
@@ -79,7 +79,7 @@
     <div class="column is-11 is-offset-1">
         <div id="editor">
             <textarea class="" id="id_body" onkeyup="markdown2html()"># hoge</textarea>
-            <div class="hicomm_result_view" id="resulいt_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc"></div>
+            <div class="hicomm_result_view" id="result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc"></div>
         </div>
         <nav class="level">
             <div class="level-left">
@@ -113,8 +113,9 @@
                     <div class="media-left">
                         <figure class="image is-128x128">
                             <div class="box has-text-centered" {% if answer.is_BestAnswer %}style="background-color: #FDD"{% endif %}> 
-                                <p class="subtitle is-4 has-text-weight-bold is-family-primary">
-                                {% if answer.point_good > 0 %}+{% endif %}{{ answer.point_good }}
+                                <p class="subtitle is-4 has-text-weight-bold is-family-primary icon-text" >
+                                    <span class="icon"><i class="far fa-thumbs-up"></i></span>
+                                    <span id="id_a_value_good_{{answer.uuid}}">{{ answer.point_good }}</span> 
                                 </p>
                             </div>
                             {% if answer.is_BestAnswer %}
@@ -132,17 +133,18 @@
                     <div class="level">
                         <div class="level-left">
                             <p class="level-item hicomm_button_respondent">
-                                <button class="detail_question_button">+ Good</button>
+                                <button class="detail_question_button{% if user in answer.good_posted_by.all %}_pushed{% endif %} cls_good_answer" key="{{answer.uuid}}">+ Good</button>
                                 <button class="detail_question_button">コメント</button>
                             
                             {% if item.author.username ==  request.user.username %}
                                 {% if item.is_solved %}
 
                                 {% else %}
-                                <button class="detail_question_button">ベストアンサーにする</button></p>
+                                <button class="detail_question_button" key="{{answer.uuid}}">ベストアンサーにする</button></p>
                                 {% endif %}
                             {% endif %}
                             </p>
+                            <p class="cls_emsg_answer_button level-item has-text-danger is-small"></p>
                         </div>
                         
                         <div class="level-right">
@@ -215,7 +217,7 @@
         });
 
         /* ボタン制御 */
-        document.getElementById("good_question").addEventListener("click", function(){
+        document.getElementById("id_good_question").addEventListener("click", function(){
             {% if  user.is_authenticated  %}
 
                 this.className = "detail_question_button button is-loading"
@@ -260,6 +262,7 @@
                                 break;
                         }
                         $("#id_emsg_question_button")[0].innerText = msg;
+                        $("#id_emsg_question_button").fadeIn("fast", function(){$(this).delay(3000).fadeOut("fast")});
                         element.className = "detail_question_button{%if good_posted %}_pushed{%endif%}";
                         element.setAttribute("style", "pointer-events: auto");
                     }
@@ -270,6 +273,65 @@
             {% endif %}
             
         });
+
+        $(".cls_good_answer").click(function(){
+            {% if  user.is_authenticated  %}
+
+                $(this)[0].className = "detail_question_button button is-loading";
+                $(this).attr("style", "pointer-events: none;");
+                var element = $(this);
+                
+                $.ajax({
+                    url: "{% url 'q_and_a:ajax_submit_good' %}",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    data: {
+                        type: "answer",
+                        uuid: element.attr("key"),
+                        user: "{{ request.user.username }}",
+                    },
+                    timeout: 5000,
+                    contentType: "application/json",
+                })
+                .done(function(data){
+                    $("#id_emsg_question_button")[0].innerText = ""
+                    if(data.substr(0,3) == "02E"){
+                        $("#id_a_value_good_" + element.attr("key"))[0].innerText = " " + data.substr(3);
+                        element[0].className = "detail_question_button";
+                        element.attr("style", "pointer-events: auto");
+                    }
+                    else if(data.substr(0,3) == "01E"){
+                        $("#id_a_value_good_" + element.attr("key"))[0].innerText = " " + data.substr(3);
+                        element[0].className = "detail_question_button_pushed";
+                        element.attr("style", "pointer-events: auto");
+                    }
+                    else{
+                        var msg = "";
+                        switch(data){
+                            case "same_person":
+                                msg = "自分の投稿には適用できません。";
+                                break;
+                            case "error":
+                                msg = "エラーが発生しました。";
+                                break;
+                            default:
+                                break;
+                        }
+                        var errbox = element.parent().parent()[0].getElementsByClassName("cls_emsg_answer_button")[0];
+                        errbox.innerText = msg;
+                        $(errbox).fadeIn("fast", function(){$(this).delay(3000).fadeOut("fast")});
+
+                        element[0].className = "detail_question_button";
+                        element.attr("style", "pointer-events: auto");
+                    }
+                });
+
+            {% else %}
+                window.location.assign("{% url 'account_manager:login' %}");
+            {% endif %}
+            
+        });
+
 
         {% if already_answered %}
         $("#id_button_input_answer").css("pointer-events", "none");

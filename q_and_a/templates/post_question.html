@@ -155,19 +155,45 @@ window.onbeforeunload = function(event){
             
             if($("#id_draft_table").hasClass("is-active")){//表示した場合
                 $.ajax({
-                    url: "ajax/get_drafts",
+                    url: "ajax/get_q_drafts",
                     headers: {"X-CSRFToken" : getCookie("csrftoken")},
                     method: "POST",
                     timeout: 10000,
                     contentType: "application/json",
                 })
                 .done(function(data){//data->table
-                    var html = ""
-                    var jsondata = JSON.parse(data);
-                    for(var i=0; i<jsondata.length; ++i){
-                        var content = jsondata[i];
-                        
+                    $("#id_loading_circle").hide();
 
+                    var html = "";
+                    var jsondata = JSON.parse(data);
+
+                    var n_draft = jsondata.length;
+
+                    if(n_draft === 0){//
+                        $("#id_draft_card_body")[0].innerHTML = "<p>下書きがありません。</p>"
+                        $("#id_button_draft_select").prop("disabled", true);
+                    }else{
+                        for(var i=0; i<n_draft; ++i){
+                            var content = jsondata[i];
+                            var c_date = new Date(content["date_created"])
+                            var m_date = new Date(content["date_modified"])
+                            
+                            html += "<tr>\n";
+                            html += "<td>" + c_date.toLocaleDateString() + "<br>" + c_date.toLocaleTimeString() + "</td>\n";
+                            html += "<td>" + m_date.toLocaleDateString() + "<br>" + m_date.toLocaleTimeString() + "</td>\n";
+                            html += "<td>" + content["title"].substr(0, 16);
+                            if (content["title"].length > 16){
+                                html += "...";
+                            }
+                            html += "</td>\n";
+                            html += "<td>" + content["body"].substr(0, 16);
+                            if (content["title"].length > 16){
+                                html += "...";
+                            }
+                            html += "</td>\n";
+                            html += "</tr>\n"
+                        }
+                        $("tbody")[0].innerHTML = html;
                     }
                 });
             }
@@ -199,12 +225,12 @@ window.onbeforeunload = function(event){
         <p class="modal-card-title">下書きを選んでください</p>
         <button class="delete" aria-label="close" onclick='toggleDraftMenu()'></button>
       </header>
-      <section class="modal-card-body">
-        <div class="has-text-centered">
+      <section class="modal-card-body" id="id_draft_card_body">
+        <div class="has-text-centered" id="id_loading_circle">
             <i class="fad fa-spinner-third fa-spin fa-5x"></i>
         </div>
         <div><!--table-->
-            <table class="table">
+            <table class="table" id="id_draft_table">
                 <thead>
                     <tr>
                         <th><abbr title="Created">作成日時</abbr></th>
@@ -229,7 +255,7 @@ window.onbeforeunload = function(event){
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-success">選択</button>
+        <button class="button is-success" id="id_button_draft_select">選択</button>
         <button class="button" onclick="toggleDraftMenu()">キャンセル</button>
       </footer>
     </div>
