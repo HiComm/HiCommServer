@@ -128,10 +128,9 @@ def detail_question(request, question_id):
 
         is_good_posted = False
         for usr in item.good_posted_by.all():
-            print(usr)
             if request.user == usr:
                 is_good_posted = True
-        print(is_good_posted)
+
 
         context = {
             "item": item, 
@@ -153,6 +152,37 @@ def detail_diary(request, article_id):
 
 #ajax系は以下------------------------------------------------------------
 
+def ajax_set_bestanswer(request, question_id):
+    if request.is_ajax():
+        try:
+            ans = Answer.objects.get(uuid=QueryDict(request.body, encoding='utf-8')["id"])
+            qst = Question.objects.get(uuid=question_id)
+            if qst.author == request.user:#自分の質問
+                if not qst.is_solved:
+                    ans.is_BestAnswer = True
+                    qst.is_solved = True
+                    ans.save()
+                    qst.save()
+                    return HttpResponse("OK1")
+                else:#取り消す場合
+                    if ans.is_BestAnswer == True:
+                        ans.is_BestAnswer = False
+                        qst.is_solved = False
+                        ans.save()
+                        qst.save()
+                        return HttpResponse("OK2")
+                    return HttpResponse("ERR")
+            else:
+                return HttpResponse("ERR")
+
+
+
+        except Exception as e:
+            print(e)
+            return HttpResponse("ERR")
+
+    return HttpResponseBadRequest()
+
 def ajax_submit_good(request):
     if request.is_ajax():
         try:
@@ -161,7 +191,7 @@ def ajax_submit_good(request):
             item = (Question if rqst["type"] == "question" else Answer if rqst["type"] == "answer" else Diary if rqst["type"]=="diary" else PostItem).objects.get(uuid=rqst["uuid"])
             user = CustomUser.objects.get(username=rqst["user"])
 
-            if item.author.username == rqst["user"]:#投稿と同一人物はいいねできない
+            if item.author == request.user:#投稿と同一人物はいいねできない
                 return HttpResponse("same_person")
             
             if user in item.good_posted_by.all():#いいねしている場合→減算

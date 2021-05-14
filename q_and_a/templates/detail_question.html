@@ -111,7 +111,7 @@
             <div class="card-content">
                 <div class="media">
                     <div class="media-left">
-                        <figure class="image is-128x128">
+                        <figure class="image is-128x128" id="id_answer_left_{{answer.uuid}}">
                             <div class="box has-text-centered" {% if answer.is_BestAnswer %}style="background-color: #FDD"{% endif %}> 
                                 <p class="subtitle is-4 has-text-weight-bold is-family-primary icon-text" >
                                     <span class="icon"><i class="far fa-thumbs-up"></i></span>
@@ -138,9 +138,11 @@
                             
                             {% if item.author.username ==  request.user.username %}
                                 {% if item.is_solved %}
-
+                                    {% if answer.is_BestAnswer %}
+                                        <button class="detail_question_button_pushed cls_set_bestanswer" key="{{answer.uuid}}">ベストアンサー</button>
+                                    {% endif %}
                                 {% else %}
-                                <button class="detail_question_button" key="{{answer.uuid}}">ベストアンサーにする</button></p>
+                                    <button class="detail_question_button cls_set_bestanswer" key="{{answer.uuid}}">ベストアンサーにする</button>
                                 {% endif %}
                             {% endif %}
                             </p>
@@ -331,6 +333,57 @@
             {% endif %}
             
         });
+
+        $(".cls_set_bestanswer").click(function(){
+            {% if  user.is_authenticated  %}
+
+                $(this)[0].className = "detail_question_button button is-loading";
+                $(this).attr("style", "pointer-events: none;");
+                var element = $(this);
+                $.ajax({
+                    url: "{% url 'q_and_a:ajax_set_bestanswer' item.uuid %}",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    data: {
+                        id: element.attr("key"),
+                    },
+                    timeout: 5000,
+                    contentType: "application/json",
+                })
+                .done(function(data){
+                    if(data == "OK1"){
+                        element[0].className = "detail_question_button_pushed";
+                        element.attr("style", "pointer-events: auto");
+                        element[0].innerText = "ベストアンサー";
+                        
+                        var solved_label = $(".hicomm-notsolved")
+                        solved_label[0].innerText = "解決済み"
+                        solved_label.removeClass("hicomm-notsolved")
+                        solved_label.addClass("hicomm-solved")
+
+                        var ans_left = $("#id_answer_left_" + element.attr("key"))[0];
+                        ans_left.children[0].setAttribute("style", "background-color: #FDD")
+
+                        var p = document.createElement("p")
+                        p.className = "tag is-danger";
+                        p.innerHTML = '<i class="fas fa-award"></i>　ベストアンサー</p>';
+                        ans_left.appendChild(p);
+                    }else{
+                        alert(data);
+                        element[0].className = "detail_question_button";
+                        element.attr("style", "pointer-events: auto");
+                    }
+                    
+                    
+                    
+                });
+
+            {% else %}
+                window.location.assign("{% url 'account_manager:login' %}");
+            {% endif %}
+            
+        });
+
 
 
         {% if already_answered %}
