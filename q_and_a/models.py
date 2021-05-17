@@ -5,7 +5,7 @@ import sys
 from django.contrib.auth import get_user_model
 
 
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 # Create your models here.
 
@@ -37,9 +37,10 @@ class Comment(PostItem):
     object_id = models.UUIDField(null=True, blank=True)
 
     post_to = GenericForeignKey("content_type", "object_id")
-
     #post_to = models.ForeignKey(PostItem, on_delete=models.CASCADE, related_name="%(class)s_post_to")
 
+    class Meta:
+        ordering = ["date_modified"]
 
 class Question(PostItem):
     title = models.CharField(default="", max_length=512)
@@ -48,10 +49,14 @@ class Question(PostItem):
     num_answers = models.IntegerField(default=0)
 
     good_posted_by = models.ManyToManyField(CustomUser, blank=True, related_name="q_good_posted_by")
+    comments = GenericRelation(Comment)
+
 class Answer(PostItem):
     reply_to = models.ForeignKey(Question, on_delete=models.CASCADE)
     is_BestAnswer = models.BooleanField(default=False)
     good_posted_by = models.ManyToManyField(CustomUser, blank=True, related_name="a_good_posted_by")
+    comments = GenericRelation(Comment)
+
 class Diary(PostItem):
     title = models.CharField(default="", max_length=512)
     tags = models.ManyToManyField(Tag)

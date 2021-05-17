@@ -12,6 +12,8 @@ from django.shortcuts import redirect, get_object_or_404
 from django.http.response import HttpResponse
 from django.http import HttpResponseRedirect
 
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+
 from django.core.paginator import Paginator
 from django.http import QueryDict
 from django.core import serializers
@@ -290,5 +292,36 @@ def ajax_get_q_drafts(request):
             print(e)
             return HttpResponseBadRequest("internal server error")
         
+    else:
+        return HttpResponseBadRequest()
+
+def ajax_post_comment(request):
+    if request.method == "POST":
+        try:
+            rqst = QueryDict(request.body, encoding='utf-8')
+            id = rqst["id"]
+            print(id)
+
+            if Question.objects.filter(uuid=id).exists():
+                item = Question.objects.get(uuid=id)
+                comment = Comment(author=request.user, body=rqst["body"], is_draft=False, post_to=item)
+                comment.save()
+            elif Answer.objects.filter(uuid=id).exists():
+                item = Answer.objects.get(uuid=id)
+                comment = Comment(author=request.user, body=rqst["body"], is_draft=False, post_to=item)
+                comment.save()
+            elif Diary.objects.filter(uuid=id).exists():
+                item = Diary.objects.get(uuid=id)
+                comment = Comment(author=request.user, body=rqst["body"], is_draft=False, post_to=item)
+                comment.save()
+            else:
+                return HttpResponseBadRequest("internal server error")
+
+            return HttpResponse("OK")
+
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest("internal server error")
+
     else:
         return HttpResponseBadRequest()

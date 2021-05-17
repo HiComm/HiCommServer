@@ -50,6 +50,12 @@
     text-align: right; font-size: 15px;
 }
 
+.cls_comment_frame{
+  display: none;
+}
+
+/* markdown display*/
+
 .detail_question_button {
   width: 140px;
   height: 45px;

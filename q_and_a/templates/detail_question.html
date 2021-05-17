@@ -51,6 +51,8 @@
                 <button class="detail_question_button" id="id_good_question"><i class="fal fa-lightbulb-on"></i> 私も気になる</button>
                 {% endif %}
                 
+                <button class="detail_question_button" id="id_button_post_comment_to_q" key="{{item.uuid}}">コメント {{item.comments.count}} 件</button>
+
                 {% if already_answered %}
                 <button class="detail_question_button_pushed" id="id_button_input_answer">回答済</button>
                 {% else %}
@@ -70,7 +72,71 @@
             </p>
         </div>
     </div>
-    
+
+    <!-- コメント -->
+    <div class="cls_comment_frame" id="id_comment_frame_{{item.uuid}}">
+        <hr>
+        {% for cmt in item.comments.all %}
+            <article class="media">
+                <div class="media-left">
+                    <figure class="image is-64x64" id="id_comment_left_{{cmt.uuid}}">
+                    <div class="box has-text-centered" style="background-color:lightyellow;">
+                        <p class="subtitle is-6 has-text-weight-bold is-family-primary icon-text" >
+                                <!--<span class="icon"><i class="far fa-thumbs-up"></i></span>-->
+                                <span id="id_a_value_good_{{item.uuid}}">{{ cmt.point_good }}</span> 
+                        </p>
+                    </div>
+                    </figure>
+                </div>
+                <div class="media-content">
+                    <div class="content">
+                    <p style="white-space: pre-wrap;">{{cmt.body}}</p>
+                    <div class="level">
+                        <div class="level-left">
+                            <small class="level-item"><a>+ Good</a></small>
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <small> {{cmt.date_published}}</small>
+                            </div>
+                            <div class="level-item">
+                                written by:&nbsp;<a>{{ cmt.author.username }}</a>
+                            </div>
+                            <div class="level-item">
+                                <figure class="image is-32x32">
+                                    <img src="https://bulma.io/images/placeholders/32x32.png" alt="Placeholder image">
+                                </figure>  
+                            </div>
+                           
+                        </div>
+                    </div>    
+                
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+        <!-- コメント入力部 -->
+        <article class="media">
+            <figure class="media-left">
+            <p class="image is-64x64">
+                <img src="https://bulma.io/images/placeholders/128x128.png">
+            </p>
+            </figure>
+            <div class="media-content">
+            <div class="field">
+                <p class="control">
+                <textarea class="textarea" placeholder="Add a comment..." key = "{{item.uuid}}"></textarea>
+                </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                <button class="button is-info cls_buttons_post_comment" key = "{{item.uuid}}">コメント投稿</button>
+                <button class="button cls_buttons_clear_comment">クリア</button>
+                </p>
+            </div>
+            </div>
+        </article>
+    </div>
 </section>
 
 <!-- 回答入力部 -->
@@ -134,7 +200,7 @@
                         <div class="level-left">
                             <p class="level-item hicomm_button_respondent">
                                 <button class="detail_question_button{% if user in answer.good_posted_by.all %}_pushed{% endif %} cls_good_answer" key="{{answer.uuid}}">+ Good</button>
-                                <button class="detail_question_button">コメント</button>
+                                <button class="detail_question_button cls_add_comment" key="{{answer.uuid}}">コメント {{answer.comments.all.count}} 件</button>
                             
                             {% if item.author.username ==  request.user.username %}
                                 {% if item.is_solved %}
@@ -155,15 +221,82 @@
                             </p>
                             <p class="level-item">
                                 written by:&nbsp;<a>{{ answer.author.username }}</a>
-                                <figure class="image is-32x32">
-                                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
-                                </figure>  
                             </p>
+                            <figure class="image is-32x32">
+                                <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                            </figure>  
+                            
                         </div>
                     </div>
                 </div>
-
-
+            
+        
+                <!-- 回答へのコメント -->
+                
+                
+                <div class="cls_comment_frame" id="id_comment_frame_{{answer.uuid}}">
+                <hr>
+                {% for cmt in answer.comments.all %}
+                    <article class="media">
+                        <div class="media-left">
+                            <figure class="image is-64x64" id="id_comment_left_{{cmt.uuid}}">
+                            <div class="box has-text-centered" style="background-color:lightyellow;">
+                                <p class="subtitle is-6 has-text-weight-bold is-family-primary icon-text" >
+                                        <!--<span class="icon"><i class="far fa-thumbs-up"></i></span>-->
+                                        <span id="id_a_value_good_{{answer.uuid}}">{{ cmt.point_good }}</span> 
+                                </p>
+                            </div>
+                            </figure>
+                        </div>
+                        <div class="media-content">
+                            <div class="content">
+                            <p style="white-space: pre-wrap;">{{cmt.body}}</p>
+                            <div class="level">
+                                <div class="level-left">
+                                    <small class="level-item"><a>+ Good</a></small>
+                                </div>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <small> {{cmt.date_published}}</small>
+                                    </div>
+                                    <div class="level-item">
+                                        written by:&nbsp;<a>{{ cmt.author.username }}</a>
+                                    </div>
+                                    <div class="level-item">
+                                        <figure class="image is-32x32">
+                                            <img src="https://bulma.io/images/placeholders/32x32.png" alt="Placeholder image">
+                                        </figure>  
+                                    </div>
+                                   
+                                </div>
+                            </div>    
+                        
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+                <!-- コメント入力部 -->
+                <article class="media">
+                    <figure class="media-left">
+                    <p class="image is-64x64">
+                        <img src="https://bulma.io/images/placeholders/128x128.png">
+                    </p>
+                    </figure>
+                    <div class="media-content">
+                    <div class="field">
+                        <p class="control">
+                        <textarea class="textarea" placeholder="Add a comment..." key = "{{answer.uuid}}"></textarea>
+                        </p>
+                    </div>
+                    <div class="field">
+                        <p class="control">
+                        <button class="button is-info cls_buttons_post_comment" key = "{{answer.uuid}}">コメント投稿</button>
+                        <button class="button cls_buttons_clear_comment">クリア</button>
+                        </p>
+                    </div>
+                    </div>
+                </article>
+                </div>
             </div>
         </div>
         <br>
@@ -275,6 +408,23 @@
             {% endif %}
             
         });
+        $(".cls_add_comment").click(function(){
+            var key = $(this).attr("key");
+            $("#id_comment_frame_" + key).slideToggle();
+
+            $(".cls_add_comment[key=" + key + "]").toggleClass("detail_question_button");
+            $(".cls_add_comment[key=" + key + "]").toggleClass("detail_question_button_pushed");
+            
+        });
+
+        $("#id_button_post_comment_to_q").click(function(){
+            var key = $(this).attr("key");
+            $("#id_comment_frame_" + key).slideToggle();
+
+            $(this).toggleClass("detail_question_button");
+            $(this).toggleClass("detail_question_button_pushed");
+            
+        });
 
         $(".cls_good_answer").click(function(){
             {% if  user.is_authenticated  %}
@@ -356,18 +506,32 @@
                         element.attr("style", "pointer-events: auto");
                         element[0].innerText = "ベストアンサー";
                         
-                        var solved_label = $(".hicomm-notsolved")
-                        solved_label[0].innerText = "解決済み"
-                        solved_label.removeClass("hicomm-notsolved")
-                        solved_label.addClass("hicomm-solved")
+                        var solved_label = $(".hicomm-notsolved");
+                        solved_label[0].innerText = "解決済み";
+                        solved_label.removeClass("hicomm-notsolved");
+                        solved_label.addClass("hicomm-solved");
 
                         var ans_left = $("#id_answer_left_" + element.attr("key"))[0];
-                        ans_left.children[0].setAttribute("style", "background-color: #FDD")
+                        ans_left.children[0].setAttribute("style", "background-color: #FDD");
 
                         var p = document.createElement("p")
                         p.className = "tag is-danger";
                         p.innerHTML = '<i class="fas fa-award"></i>　ベストアンサー</p>';
                         ans_left.appendChild(p);
+                    }else if(data == "OK2"){
+                        var solved_label = $(".hicomm-solved");
+                        solved_label[0].innerText = "受付中";
+                        solved_label.removeClass("hicomm-solved");
+                        solved_label.addClass("hicomm-notsolved");
+
+                        var ans_left = $("#id_answer_left_" + element.attr("key"))[0];
+                        ans_left.children[0].setAttribute("style", "background-color: #FFF");
+                        ans_left.children[1].remove();
+
+                        element[0].className = "detail_question_button";
+                        element.attr("style", "pointer-events: auto");
+                        element[0].innerText = "ベストアンサーにする";
+
                     }else{
                         alert(data);
                         element[0].className = "detail_question_button";
@@ -430,6 +594,31 @@
             });
         });
         
+        $(".cls_buttons_post_comment").click(function(){
+            $.ajax({
+                url: "{% url 'q_and_a:ajax_post_comment'%}",
+                headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                method: "POST",
+                data:{
+                    id: $(this).attr("key"),
+                    body: $("textarea[key=" + $(this).attr("key") + "]")[0].value,
+                },
+                timeout: 5000,
+                contentType: "application/json",
+            })
+            .done(function(data){
+                if(data == "OK"){
+                    location.reload();
+                    window.scrollTo(0,0);
+                }else{
+                    alert(data);
+                }
+            })
+        });
+        
+        $(".cls_buttons_clear_comment").click(function(){
+            this.parentNode.parentNode.parentNode.getElementsByTagName("textarea")[0].value = "";
+        })
     });
 </script>
 
