@@ -62,6 +62,7 @@ def post_question(request):
     ctx = {}
 
     if request.method == 'POST':#送信時
+        print(request.POST)
 
         form = PostQuestionForm(request.POST)
         if form.is_valid():
@@ -98,19 +99,22 @@ def post_diary(request):
     ctx = {}
 
     if request.method == 'POST':#送信時
-        form = PostDiaryForm(request.POST)
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.author = request.user
-            item.is_draft = False
-            item.date_created = timezone.now()
-            item.save()
+        try:
+            form = PostDiaryForm(request.POST)
+            if form.is_valid():
+                item = form.save(commit=False)
+                item.author = request.user
+                item.is_draft = False
+                item.date_created = timezone.now()
+                item.save()
 
-            return redirect(reverse_lazy('q_and_a:index'))
+                return redirect(reverse_lazy('q_and_a:index'))
 
-        else:#validじゃないとき（どんなとき？）
-            ctx['form'] = form
-            return render(request, template_name, ctx)
+            else:#validじゃないとき
+                return redirect(reverse_lazy("q_and_a:error"))
+        except Exception as e:
+            print(e)
+            return redirect(reverse_lazy("q_and_a:error"))
 
     else:#入ってきたとき
         ctx['form'] = form_class
@@ -190,7 +194,7 @@ def ajax_submit_good(request):
         try:
             rqst = QueryDict(request.body, encoding='utf-8')
 
-            item = (Question if rqst["type"] == "question" else Answer if rqst["type"] == "answer" else Diary if rqst["type"]=="diary" else PostItem).objects.get(uuid=rqst["uuid"])
+            item = (Question if rqst["type"] == "question" else Answer if rqst["type"] == "answer" else Diary if rqst["type"]=="diary" else Comment).objects.get(uuid=rqst["uuid"])
             user = CustomUser.objects.get(username=rqst["user"])
 
             if item.author == request.user:#投稿と同一人物はいいねできない
@@ -318,6 +322,21 @@ def ajax_post_comment(request):
                 return HttpResponseBadRequest("internal server error")
 
             return HttpResponse("OK")
+
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest("internal server error")
+
+    else:
+        return HttpResponseBadRequest()
+
+def ajax_get_tags_json(request):
+    if request.method == "POST":
+        try:
+            tags = Tag.objects.all()
+            data = json.dumps([tag for tag in tags.values()])
+            print(data)
+            return HttpResponse(data)
 
         except Exception as e:
             print(e)

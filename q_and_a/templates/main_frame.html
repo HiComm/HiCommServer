@@ -2,8 +2,11 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <meta charset="utf-8">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <!-- utility -->
+        <script src="{% static 'js/utility.js' %}"></script>
         <!-- ファビコン（サイトのアイコン）設定．-->
         <link rel="shortcut icon" href="{% static "images/hiokichi.ico" %}" type="image/vnd.microsoft.icon">
         <!-- CSSフレームワーク：BULMA (https://bulma.io/documentation/) -->
@@ -21,8 +24,6 @@
         <script src="{% static 'js/markdown_buttons.js' %}"></script>
         <script src="{% static 'js/markdown.js' %}"></script>
 
-        <!-- utility -->
-        <script src="{% static 'js/utility.js' %}"></script>
 
         <!-- カスタム用のCSS -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/customize_bulma.css' %}">
@@ -104,6 +105,30 @@
     </section>
     {% block footermenu %}{% endblock %}
     <!-- ============================================================================ -->
+    
+    <!-- -->
+    <div id="id_ie_warning" class="modal" style="display: none;">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="modal-card">
+                <header class="modal-card-head">
+                  <p class="modal-card-title">お知らせ</p>
+                </header>
+                <section class="modal-card-body has-text-centered">
+                  <!-- Content ... -->
+                Internet Explorerは、Edge、FireFox、Chromeといったモダンブラウザが共通してサポートしている機能を搭載していません。<br>
+                <br>
+                Windows 10のIE 11は、2025年10月14日にサポートが終了します。<br>
+                <br>
+                恐れ入りますが、すべての機能をご利用いただくだめ、<br>
+                Internet Explorer以外のブラウザをご利用下さい。
+                </section>
+                <footer class="modal-card-foot">
+                  
+                </footer>
+            </div>
+        </div>
+    </div>
 
     <!-- footer -->
     <footer class="footer">
@@ -113,6 +138,16 @@
             </p>
         </div>
     </footer>
+    
+    <script>
+          /* DOM構造読み込み完了後にアラート表示のHTMLを挿入 */
+            document.addEventListener("DOMContentLoaded", function () {
+                if ( isIE() ) {
+                    document.getElementById("id_ie_warning").setAttribute("style", "display: block;");
+                }
+            });
+    </script>
+
     </body>
 <!--
                                    ...((-......

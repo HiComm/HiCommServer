@@ -80,20 +80,25 @@
             <article class="media">
                 <div class="media-left">
                     <figure class="image is-64x64" id="id_comment_left_{{cmt.uuid}}">
-                    <div class="box has-text-centered" style="background-color:lightyellow;">
+                    <div class="box has-text-centered" style="background-color:#EEE;">
                         <p class="subtitle is-6 has-text-weight-bold is-family-primary icon-text" >
                                 <!--<span class="icon"><i class="far fa-thumbs-up"></i></span>-->
-                                <span id="id_a_value_good_{{item.uuid}}">{{ cmt.point_good }}</span> 
+                                <span id="id_c_value_good_{{cmt.uuid}}">{{ cmt.point_good }}</span> 
                         </p>
                     </div>
                     </figure>
                 </div>
                 <div class="media-content">
-                    <div class="content">
+                    <div class="content cls_comment_body">
                     <p style="white-space: pre-wrap;">{{cmt.body}}</p>
                     <div class="level">
                         <div class="level-left">
-                            <small class="level-item"><a>+ Good</a></small>
+                            {% if user in cmt.good_posted_by.all %}
+                            <small class="level-item cls_good_comment" key="{{cmt.uuid}}"><a>- ちゃうわ</a></small>
+                            {% else %}
+                            <small class="level-item cls_good_comment" key="{{cmt.uuid}}"><a>+ それな</a></small>
+                            {% endif %}
+                            <small class="level-item cls_reply_comment" key="{{item.uuid}}"><a>引用コメ</a></small>
                         </div>
                         <div class="level-right">
                             <div class="level-item">
@@ -240,20 +245,25 @@
                     <article class="media">
                         <div class="media-left">
                             <figure class="image is-64x64" id="id_comment_left_{{cmt.uuid}}">
-                            <div class="box has-text-centered" style="background-color:lightyellow;">
+                            <div class="box has-text-centered" style="background-color:#EEE;">
                                 <p class="subtitle is-6 has-text-weight-bold is-family-primary icon-text" >
                                         <!--<span class="icon"><i class="far fa-thumbs-up"></i></span>-->
-                                        <span id="id_a_value_good_{{answer.uuid}}">{{ cmt.point_good }}</span> 
+                                        <span id="id_c_value_good_{{cmt.uuid}}">{{ cmt.point_good }}</span> 
                                 </p>
                             </div>
                             </figure>
                         </div>
                         <div class="media-content">
-                            <div class="content">
+                            <div class="content cls_comment_body">
                             <p style="white-space: pre-wrap;">{{cmt.body}}</p>
                             <div class="level">
                                 <div class="level-left">
-                                    <small class="level-item"><a>+ Good</a></small>
+                                    {% if user in cmt.good_posted_by.all %}
+                                    <small class="level-item cls_good_comment" key="{{cmt.uuid}}"><a>- ちゃうわ</a></small>
+                                    {% else %}
+                                    <small class="level-item cls_good_comment" key="{{cmt.uuid}}"><a>+ それな</a></small>
+                                    {% endif %}
+                                    <small class="level-item cls_reply_comment" key="{{answer.uuid}}"><a>引用コメ</a></small>
                                 </div>
                                 <div class="level-right">
                                     <div class="level-item">
@@ -619,6 +629,64 @@
         $(".cls_buttons_clear_comment").click(function(){
             this.parentNode.parentNode.parentNode.getElementsByTagName("textarea")[0].value = "";
         })
+
+        $(".cls_good_comment").click(function(){
+            {% if  user.is_authenticated  %}
+
+                var element = $(this);
+                
+                $.ajax({
+                    url: "{% url 'q_and_a:ajax_submit_good' %}",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    data: {
+                        type: "comment",
+                        uuid: element.attr("key"),
+                        user: "{{ request.user.username }}",
+                    },
+                    timeout: 5000,
+                    contentType: "application/json",
+                })
+                .done(function(data){
+                    if(data.substr(0,3) == "02E"){//減算
+                        $("#id_c_value_good_" + element.attr("key"))[0].innerText = " " + data.substr(3);
+                        element[0].innerHTML = "<a>+ それな</a>";
+                    }
+                    else if(data.substr(0,3) == "01E"){//加算
+                        $("#id_c_value_good_" + element.attr("key"))[0].innerText = " " + data.substr(3);
+                        element[0].innerHTML = "<a>- ちゃうわ</a>";
+
+                    }
+                    else{
+                        var msg = "";
+                        switch(data){
+                            case "same_person":
+                                msg = "自分の投稿には適用できません。";
+                                break;
+                            case "error":
+                                msg = "エラーが発生しました。";
+                                break;
+                            default:
+                                break;
+                        }
+                        alert(msg);
+                    }
+                });
+
+            {% else %}
+                window.location.assign("{% url 'account_manager:login' %}");
+            {% endif %}
+            
+        });
+
+        $(".cls_reply_comment").click(function(){
+            var key = $(this).attr("key");
+            var txt = this.parentNode.parentNode.parentNode.children[0].innerText.split("\n");
+            $("textarea[key=" + key + "]")[0].value = "\n> " + txt.join("\n> ");
+
+            $("html,body").animate({scrollTop: $("textarea[key=" + key + "]").offset().top});
+        });
+
     });
 </script>
 

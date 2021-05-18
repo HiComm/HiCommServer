@@ -37,7 +37,7 @@ class Comment(PostItem):
     object_id = models.UUIDField(null=True, blank=True)
 
     post_to = GenericForeignKey("content_type", "object_id")
-    #post_to = models.ForeignKey(PostItem, on_delete=models.CASCADE, related_name="%(class)s_post_to")
+    good_posted_by = models.ManyToManyField(CustomUser, blank=True, related_name="c_good_posted_by")
 
     class Meta:
         ordering = ["date_modified"]

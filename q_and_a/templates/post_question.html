@@ -21,14 +21,45 @@ window.onbeforeunload = function(event){
     {% csrf_token %}
     <form method="POST">
         {% csrf_token%}
-    <div class="field">
-        <label>
-            {{ form.title.label_tag}}
-        </label>
-        <div class="control is-large">
-            {{ form.title }}
+        <div class="field">
+            <label class="label">
+                {{ form.title.label_tag}}
+            </label>
+
+            <div class="control is-large">
+                {{ form.title }}
+            </div>
         </div>
-    </div>
+
+        <div class="field is-horizontal">
+            <button class="button">test</button>
+            <div class="field-label is-normal">
+                <label class="label">
+                    Tags:
+                </label>
+            </div>
+            <div class="field-body">
+                <div class="buttons" id="id_tag_buttons">
+                    <button class="button is-info is-outlined">
+                        <span>Delete</span>
+                        <span class="icon is-small cls_delete_tag">
+                          <i class="fas fa-times"></i>
+                        </span>
+                    </button>
+                    <button class="button is-info is-outlined">
+                        <span>Delete</span>
+                        <span class="icon is-small cls_delete_tag">
+                          <i class="fas fa-times"></i>
+                        </span>
+                    </button>
+                </div>
+                <div class="field" contenteditable="true" style="display:table-cell;vertical-align:middle;">
+                    <input class="input" placeholder="タグを入力してください">
+                    <p>※サジェスト候補にないタグは#を頭につけてください（e.g. #HIOKI）</p>
+                </div>
+                <input class="" name="tags" id="id_tags" type="hidden">
+            </div>
+        </div>
 
     <div class="field has-addons">
         <p class="control">
@@ -112,25 +143,32 @@ window.onbeforeunload = function(event){
             </div>
         </article>
     </div>
+    <datalist id="datalist_tag_suggest">
+
+    </datalist>
 
     <script>
-        /*
-        function getCookie(name) {
-             var cookieValue = null;
-             if (document.cookie && document.cookie != '') {
-                 var cookies = document.cookie.split(';');
-                 for (var i = 0; i < cookies.length; i++) {
-                     var cookie = jQuery.trim(cookies[i]);
-                     // Does this cookie string begin with the name we want?
-                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                         break;
-                     }
-                 }
-             }
-             return cookieValue;
-        }
-        */
+        window.addEventListener("load", function(){
+            $.ajax({
+                    url: "ajax/get_tags_json",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    timeout: 10000,
+                    contentType: "application/json",
+            })
+            .done(function(data) {
+                var dl = document.getElementById("datalist_tag_suggest");
+                var json = JSON.parse(data);
+                json.forEach(function(item){
+                    var opt = document.createElement("option");
+                    opt.value = item.name;
+                    opt.label = item.name;
+                    dl.appendChild(opt);
+                });
+            });
+            
+        });
+
         function save_draft(){
             $.ajax({
                     url: "ajax/save_draft",
