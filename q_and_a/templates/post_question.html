@@ -54,7 +54,7 @@ window.onbeforeunload = function(event){
                     </button>
                 </div>
                 <div class="field" contenteditable="true" style="display:table-cell;vertical-align:middle;">
-                    <input class="input" placeholder="タグを入力してください">
+                    <input id="id_input_tags" class="input" placeholder="タグを入力してください" autocomplete="on" list="datalist_tag_suggest">
                     <p>※サジェスト候補にないタグは#を頭につけてください（e.g. #HIOKI）</p>
                 </div>
                 <input class="" name="tags" id="id_tags" type="hidden">
@@ -236,6 +236,11 @@ window.onbeforeunload = function(event){
                 });
             }
         }
+
+        $("#id_input_tags").keyup(function(){
+            var tags = $("#id_input_tags").text();
+            alert(tags);
+        });
 
     </script>
     
