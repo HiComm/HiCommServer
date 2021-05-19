@@ -26,11 +26,10 @@
                     {{ item.title }}
                 </p>
 
-
-                <div class="tags">
-                    <span class="tag is-warning">tag</span>
-                    <span class="tag is-warning">tag</span>
-                    <span class="tag is-warning">tag</span>
+                <div class="tags is-family-monospace">
+                    {% for tag in item.tags.all %}
+                    <span class="tag {% if tag.is_official %}is-info{% else %}is-warning{% endif %} is-light">{{tag.name}}</span>
+                    {% endfor %}
                 </div>
             </div>
         </div>

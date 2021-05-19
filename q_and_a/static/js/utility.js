@@ -21,3 +21,21 @@ function isIE() {
     }
     return false;
 }
+
+function showOpenFileDialog(){
+    return new Promise(resolve => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.txt, text/plain';
+        input.onchange = event => { resolve(event.target.files[0]); };
+        input.click();
+    });
+}
+
+function readAsText(file){
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = () => { resolve(reader.result); };
+    });
+}

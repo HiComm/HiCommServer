@@ -66,21 +66,36 @@ def post_question(request):
 
         form = PostQuestionForm(request.POST)
         if form.is_valid():
-            item = form.save(commit=False)
-            item.author = request.user
+            try:
+                item = form.save(commit=False)
+                item.author = request.user
 
-            if request.POST["dftid"] != "initial":
-                item.uuid = request.POST["dftid"]
+                if request.POST["dftid"] != "initial":
+                    item.uuid = request.POST["dftid"]
 
-            item.is_draft = False
-            item.is_solved = False
-            item.date_created = timezone.now()
-            item.date_modified = timezone.now()
-            item.date_published = timezone.now()
+                item.is_draft = False
+                item.is_solved = False
+                item.date_created = timezone.now()
+                item.date_modified = timezone.now()
+                item.date_published = timezone.now()
 
-            item.save()
+                item.save()
 
-            return redirect(reverse_lazy('q_and_a:index'))
+
+                for tagname in request.POST["tags"].split(","):
+                    if Tag.objects.filter(name=tagname).exists():
+                        tag = Tag.objects.get(name=tagname)
+                        item.tags.add(tag)
+                    else:
+                        new_tag = Tag.objects.create(name=tagname)
+                        item.tags.add(new_tag)
+                
+                #item.save()
+
+                return redirect(reverse_lazy('q_and_a:index'))
+            except Exception as e:
+                print(e)
+                return redirect(reverse_lazy("q_and_a:error"))
 
         else:#validじゃないとき（どんなとき？）
             ctx['form'] = form
@@ -151,10 +166,23 @@ def detail_question(request, question_id):
         return redirect(reverse_lazy("q_and_a:error"))
 
 def detail_diary(request, article_id):
-    template_name = "detail_question.html"#あとでかえる
-    model = Question
+    try:
+        template_name = "detail_article.html"#あとでかえる
+        item = Diary.objects.get(uuid=article_id)
+    
+        is_good_posted = False
+        for usr in item.good_posted_by.all():
+            if request.user == usr:
+                is_good_posted = True
+        context = {
+            "item": item,
+            "good_posted": is_good_posted,
+        }
 
-    return render(request, template_name)
+        return render(request, template_name, context)
+    except Exception as e:
+        print(e)
+        return redirect(reverse_lazy("q_and_a:error"))
 
 #ajax系は以下------------------------------------------------------------
 
@@ -246,17 +274,21 @@ def ajax_save_draft(request):
     if request.method == "POST":
         try:
             rqst = QueryDict(request.body, encoding='utf-8')
+            Model = Question if rqst["type"]=="question" else Diary if rqst["type"]=="article" else PostItem
 
+            if Model == PostItem:
+                return HttpResponseBadRequest("unsupported model type")
+            
             if rqst["id"] == "initial":
-                ans = Question.objects.create(author=request.user, title=rqst["title"], body=rqst["body"], is_draft=True)
+                ans = Model.objects.create(author=request.user, title=rqst["title"], body=rqst["body"], is_draft=True)
                 ans.date_created = timezone.now()
                 ans.save()
             else:
-                ans = Question.objects.get(uuid=rqst["id"])
+                ans = Model.objects.get(uuid=rqst["id"])
 
                 #自分のものである認証(勝手に書き換えないように)
                 if ans.author != request.user:
-                    return redirect(reverse_lazy("q_and_a:error"))
+                    return HttpResponseBadRequest("internal server error")
 
                 ans.date_modified = timezone.now()
                 ans.title = rqst["title"]
@@ -299,12 +331,36 @@ def ajax_get_q_drafts(request):
     else:
         return HttpResponseBadRequest()
 
+def ajax_get_d_drafts(request):
+    output = []
+    if request.method == "POST":
+        try:
+            drafts = Diary.objects.filter(author=request.user, is_draft=True).order_by("-date_modified")
+            #draft_list = serializers.serialize('json', drafts)
+            for draft in drafts:
+               data = {}
+               uuid = str(draft.uuid.hex)
+               data["uuid"] = "{}-{}-{}-{}-{}".format(uuid[0:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:])
+               data["date_created"] = str(draft.date_created)
+               data["date_modified"] = str(draft.date_modified)
+               data["title"] = draft.title
+               data["body"] = draft.body
+               output.append(data)
+            
+            return HttpResponse(json.dumps(output))
+            
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest("internal server error")
+        
+    else:
+        return HttpResponseBadRequest()
+
 def ajax_post_comment(request):
     if request.method == "POST":
         try:
             rqst = QueryDict(request.body, encoding='utf-8')
             id = rqst["id"]
-            print(id)
 
             if Question.objects.filter(uuid=id).exists():
                 item = Question.objects.get(uuid=id)
@@ -335,7 +391,6 @@ def ajax_get_tags_json(request):
         try:
             tags = Tag.objects.all()
             data = json.dumps([tag for tag in tags.values()])
-            print(data)
             return HttpResponse(data)
 
         except Exception as e:

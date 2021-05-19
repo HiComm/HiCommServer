@@ -1,11 +1,11 @@
 {% extends "main_frame.html" %}
 {% block content %}
-<div class="section" style="border:1px solid">
-    Hiokimochi投稿
+<div class="section" style="border:1px solid; display: none;">
+    通知欄？
 </div>
 <main class="columns is-mobile is-variable is-0-mobile is-2-tablet is-4-desktop is-6-widescreen is-8-fullhd" style="word-break: break-all;">
 
-    <div class="column has-background-grey-light is-two-fifths">
+    <div class="column has-background-grey-light">
         <h1 class="title headline-red">Q＆A</h1>
         {% if not Question_list %}
         <div class="has-text-centered">
@@ -30,18 +30,20 @@
                 </div>
                 <div class="media-content">
                 <div class="content">
-                    <p>
-                    <strong>{{ q.title | truncatechars:70 }}</strong><br>
-                    <small>@{{ q.author.username }}</small> <small>{{ q.date_created }}</small>
-
-                    <div>
-                    {% for tag in q.tags.all %}
-                        {{ tag.name }}
-                    {% endfor %}
+                    
+                    <strong class="title is-5">{{ q.title | truncatechars:70 }}</strong>
+                    <div class="cls_tag_box">
+                        {% for tag in q.tags.all %}
+                            <span class="tag is-warning is-light">{{ tag.name }}</span>
+                        {% endfor %}
                     </div>
-                    <br>
-                    <small>{{ q.body | truncatechars:140 }}</small>
+                    <p>
+                        <small>{{ q.body | truncatechars:140 }}</small>
                     </p>
+                    <div class="has-text-right is-size-6 has-text-grey">
+                        <small>{{ q.date_created }} by {{ q.author.username }}</small> 
+                    </div>
+                    
                 </div>
                 </div>
                 <div class="media-right">
@@ -82,41 +84,44 @@
     </div>
     <!-- knowledge　-->
 
-    <div class="column has-background-white-ter is-two-fifths">
+    <div class="column has-background-white-ter">
         <h1 class="title headline-blue">Knowledge</h1>
         {% if not Diary_list %}
         <div class="has-text-centered">
             <p>まだ投稿はありません。是非投稿してみてください。</p>
         </div>
         {% endif %}
-        {% for q in Diary_list %}                
-        <div class="box">
+        {% for d in Diary_list %}                
+        <div class="box" onclick="location.href='{% url 'q_and_a:detail_article' d.uuid %}'" style="cursor: hand; cursor:pointer;">
 
             <article class="media">
                 <div class="media-left">
+                    <div class="image is-48x48 has-text-centered">
+                        <small style="color: darkgoldenrod"><i class="fal fa-lightbulb-on"></i> {{ d.point_good }}</small>
+                    </div>
                 </div>
                 <div class="media-content">
-                <div class="content">
-                    <p>
-                    <strong>{{ q.title }}</strong> <small>@ {{ q.author.username }}</small> <small>{{q.date_created }}</small>
-                    <br>
-                    {{ q.body | truncatechars:300}}
-                    </p>
+                    <div class="content">
+                        
+                        <strong class="title is-5">{{ d.title | truncatechars:70 }}</strong>
+                        <div class="cls_tag_box">
+                            {% for tag in d.tags.all %}
+                                <span class="tag is-warning is-light">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                        <p>
+                            <small>{{ d.body | truncatechars:140 }}</small>
+                        </p>
+                        <div class="has-text-right is-size-6 has-text-grey">
+                            <small>{{ d.date_created }} by {{ d.author.username }}</small> 
+                        </div>
+                        
+                    </div>
                 </div>
-                </div>
+                
             </article>
         </div>
         {% endfor %}
-    </div>
-    <div class="column">
-        Hiokimochi Timeline
-        <div class="text">
-            <ul>
-              {% for q in Question_list %}
-              <li>{{ q.title }}</li>
-              {% endfor %}
-            </ul>
-          </div>
     </div>
 　</main>
 {% endblock %}

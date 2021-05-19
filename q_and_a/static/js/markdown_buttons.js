@@ -91,6 +91,141 @@ function header_button(){
     markdown2html();
 }
 
+function itemize_button(){
+    var editor = document.getElementById("id_body");
+    var pos_start = editor.selectionStart;
+    var pos_end = editor.selectionEnd;
+    var sentence = editor.value;
+    var len      = sentence.length;
+
+    var before   = sentence.substr(0, pos_start);
+    var after    = sentence.substr(pos_start, len);
+    var diff = 0;
+    
+    var rows = before.split("\n");
+    if(rows[rows.length-1].substr(0,2) != "* "){
+        rows[rows.length-1] = "* " + rows[rows.length-1];
+        diff = 2;
+    }else{
+        rows[rows.length-1] = rows[rows.length-1].substr(2);
+        diff = -2;
+    }
+
+    var presentence = ""
+    for(var i = 0; i<rows.length-1;++i){
+        presentence += rows[i] + "\n"
+    }
+    presentence += rows[rows.length-1];
+    editor.value = presentence + after;
+    
+    editor.focus();
+    editor.setSelectionRange(pos_end+diff, pos_end+diff);
+    
+    markdown2html();
+}
+
+function numeric_button(){
+    var editor = document.getElementById("id_body");
+    var pos_start = editor.selectionStart;
+    var pos_end = editor.selectionEnd;
+    var sentence = editor.value;
+    var len      = sentence.length;
+
+    var before   = sentence.substr(0, pos_start);
+    var after    = sentence.substr(pos_start, len);
+    var diff = 0;
+    
+    var rows = before.split("\n");
+    if(rows[rows.length-1].substr(0,3) != "1. "){
+        rows[rows.length-1] = "1. " + rows[rows.length-1];
+        diff = 3;
+    }else{
+        rows[rows.length-1] = rows[rows.length-1].substr(3);
+        diff = -3;
+    }
+
+    var presentence = ""
+    for(var i = 0; i<rows.length-1;++i){
+        presentence += rows[i] + "\n"
+    }
+    presentence += rows[rows.length-1];
+    editor.value = presentence + after;
+    
+    editor.focus();
+    editor.setSelectionRange(pos_end+diff, pos_end+diff);
+    
+    markdown2html();
+}
+
+function quote_button(){
+    var editor = document.getElementById("id_body");
+    var pos_start = editor.selectionStart;
+    var pos_end = editor.selectionEnd;
+    var sentence = editor.value;
+    var len      = sentence.length;
+
+    var before   = sentence.substr(0, pos_start);
+    var after    = sentence.substr(pos_start, len);
+    var diff = 0;
+    
+    var rows = before.split("\n");
+    if(rows[rows.length-1].substr(0,2) != "> "){
+        rows[rows.length-1] = "> " + rows[rows.length-1];
+        diff = 2;
+    }else{
+        rows[rows.length-1] = rows[rows.length-1].substr(2);
+        diff = -2;
+    }
+
+    var presentence = ""
+    for(var i = 0; i<rows.length-1;++i){
+        presentence += rows[i] + "\n"
+    }
+    presentence += rows[rows.length-1];
+    editor.value = presentence + after;
+    
+    editor.focus();
+    editor.setSelectionRange(pos_end+diff, pos_end+diff);
+    
+    markdown2html();
+}
+
+function link_button(){
+    var editor = document.getElementById("id_body");
+    var pos_start = editor.selectionStart;
+    var pos_end = editor.selectionEnd;
+    var sentence = editor.value;
+    var len      = sentence.length;
+
+    var before   = sentence.substr(0, pos_start);
+    var after    = sentence.substr(pos_start, len);
+
+    editor.value = before + "[見出し](https://)" + after;
+    
+    editor.focus();
+    editor.setSelectionRange(pos_end+15, pos_end+15);
+    markdown2html();
+}
+
+function image_button(){
+    var editor = document.getElementById("id_body");
+    var pos_start = editor.selectionStart;
+    var pos_end = editor.selectionEnd;
+    var sentence = editor.value;
+    var len      = sentence.length;
+
+    var before   = sentence.substr(0, pos_start);
+    var after    = sentence.substr(pos_start, len);
+
+    var insertTxt = '![置換テキスト](https://画像へのURL "タイトル")';
+    editor.value = before + insertTxt + after;
+    
+    editor.focus();
+    editor.setSelectionRange(pos_end+insertTxt.length, pos_end+insertTxt.length);
+    markdown2html();
+}
+
+
 function question_button() {
     document.getElementById('id_body').focus();
 

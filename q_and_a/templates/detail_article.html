@@ -1,0 +1,319 @@
+{% extends "main_frame.html" %}
+{% block title %}
+{{item.title }} - 記事 | {{ block.super }}
+{% endblock title %}
+
+{% block content %}
+
+
+<!-- 記事内容 -->
+<section class="hero has-background-light">
+    <div class="hero-body">
+        <div class="columns">
+            <div class="column is-1" style="border-right: solid 1px #888;">
+                <p class="icon-text is-size-3" style="color: darkgoldenrod;">
+                    <i class="fal fa-lightbulb-on"></i><span id="id_value_good_{{item.uuid}}"> {{ item.point_good }}</span>
+                </p>
+                <small>{{ item.date_published }}</small>
+            </div>
+
+            <div class="column">
+                <p class="title">
+                    {{ item.title }}
+                </p>
+
+
+                <div class="tags is-family-monospace">
+                    {% for tag in item.tags.all %}
+                    <span class="tag {% if tag.is_official %}is-info{% else %}is-warning{% endif %} is-light">{{tag.name}}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="hero-body">
+    <div id="article_body" class="hicomm_result_view">{{ item.body }}</div>
+    <hr>
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item hicomm_button_respondent">
+                {% if good_posted %}
+                <button class="detail_question_button_pushed" id="id_good_article"><i class="fal fa-lightbulb-on"></i> 有意義</button>
+                {% else %}
+                <button class="detail_question_button" id="id_good_article"><i class="fal fa-lightbulb-on"></i> 有意義</button>
+                {% endif %}
+                
+                <button class="detail_question_button" id="id_button_post_comment_to_d" key="{{item.uuid}}">コメント {{item.comments.count}} 件</button>       
+            </div>
+            <p class="level-item has-text-danger is-small" id="id_emsg_question_button"></p>
+        </div>
+        <div class="level-right">
+            <p class="level-item">
+                written by:&nbsp;<a>{{ item.author.username }}</a>
+                           
+                <figure class="image is-32x32">
+                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                </figure>  
+            </p>
+        </div>
+    </div>
+
+    <!-- コメント -->
+    <div class="cls_comment_frame" id="id_comment_frame_{{item.uuid}}">
+        <hr>
+        {% for cmt in item.comments.all %}
+            <article class="media">
+                <div class="media-left">
+                    <figure class="image is-64x64" id="id_comment_left_{{cmt.uuid}}">
+                    <div class="box has-text-centered" style="background-color:#EEE;">
+                        <p class="subtitle is-6 has-text-weight-bold is-family-primary icon-text" >
+                                <!--<span class="icon"><i class="far fa-thumbs-up"></i></span>-->
+                                <span id="id_c_value_good_{{cmt.uuid}}">{{ cmt.point_good }}</span> 
+                        </p>
+                    </div>
+                    </figure>
+                </div>
+                <div class="media-content">
+                    <div class="content cls_comment_body">
+                    <p style="white-space: pre-wrap;">{{cmt.body}}</p>
+                    <div class="level">
+                        <div class="level-left">
+                            {% if user in cmt.good_posted_by.all %}
+                            <small class="level-item cls_good_comment" key="{{cmt.uuid}}"><a>- 共感</a></small>
+                            {% else %}
+                            <small class="level-item cls_good_comment" key="{{cmt.uuid}}"><a>+ 共感</a></small>
+                            {% endif %}
+                            <small class="level-item cls_reply_comment" key="{{item.uuid}}"><a>引用コメ</a></small>
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <small> {{cmt.date_published}}</small>
+                            </div>
+                            <div class="level-item">
+                                written by:&nbsp;<a>{{ cmt.author.username }}</a>
+                            </div>
+                            <div class="level-item">
+                                <figure class="image is-32x32">
+                                    <img src="https://bulma.io/images/placeholders/32x32.png" alt="Placeholder image">
+                                </figure>  
+                            </div>
+                           
+                        </div>
+                    </div>    
+                
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+        <!-- コメント入力部 -->
+        <article class="media">
+            <figure class="media-left">
+            <p class="image is-64x64">
+                <img src="https://bulma.io/images/placeholders/128x128.png">
+            </p>
+            </figure>
+            <div class="media-content">
+            <div class="field">
+                <p class="control">
+                <textarea class="textarea" placeholder="Add a comment..." key = "{{item.uuid}}"></textarea>
+                </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                <button class="button is-info cls_buttons_post_comment" key = "{{item.uuid}}">コメント投稿</button>
+                <button class="button cls_buttons_clear_comment">クリア</button>
+                </p>
+            </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+
+<script>
+$(document).ready(function(){
+        var qtext = document.getElementById('article_body');
+
+        /* hilight.jsの例外処理 */
+        qtext.innerHTML = qtext.innerHTML.replace(/```python3/g, "```python");
+
+        const txt = marked(qtext.innerHTML);
+        qtext.innerHTML = txt;
+
+
+        /* コードハイライトの適用 */
+        var nodelist = document.querySelectorAll('pre code');
+        var node = Array.prototype.slice.call(nodelist,0); 
+        node.forEach(function(block){
+            hljs.highlightElement(block);
+        });
+
+        /* & -> &amp;の修正 */
+        document.querySelectorAll("code").forEach(function(element) {
+            element.innerHTML = element.innerHTML.replace(/&amp;/g, "&");
+        });
+
+        /* ボタン制御 */
+        document.getElementById("id_good_article").addEventListener("click", function(){
+            {% if  user.is_authenticated  %}
+
+                this.className = "detail_question_button button is-loading"
+                this.setAttribute("style", "pointer-events: none;");
+                
+
+                var element = this;
+                $.ajax({
+                    url: "{% url 'q_and_a:ajax_submit_good' %}",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    data: {
+                        type: "diary",
+                        uuid: "{{ item.uuid }}",
+                        user: "{{ request.user.username }}",
+                    },
+                    timeout: 5000,
+                    contentType: "application/json",
+                })
+                .done(function(data){
+                    $("#id_emsg_question_button")[0].innerText = ""
+                    if(data.substr(0,3) == "02E"){
+                        $("#id_value_good_{{item.uuid}}")[0].innerText = " " + data.substr(3);
+                        element.className = "detail_question_button";
+                        element.setAttribute("style", "pointer-events: auto");
+                    }
+                    else if(data.substr(0,3) == "01E"){
+                        $("#id_value_good_{{item.uuid}}")[0].innerText = " " + data.substr(3);
+                        element.className = "detail_question_button_pushed";
+                        element.setAttribute("style", "pointer-events: auto");
+                    }
+                    else{
+                        var msg = "";
+                        switch(data){
+                            case "same_person":
+                                msg = "自分の投稿には適用できません。";
+                                break;
+                            case "error":
+                                msg = "エラーが発生しました。";
+                                break;
+                            default:
+                                break;
+                        }
+                        $("#id_emsg_question_button")[0].innerText = msg;
+                        $("#id_emsg_question_button").fadeIn("fast", function(){$(this).delay(3000).fadeOut("fast")});
+                        element.className = "detail_question_button{%if good_posted %}_pushed{%endif%}";
+                        element.setAttribute("style", "pointer-events: auto");
+                    }
+                });
+
+            {% else %}
+                window.location.assign("{% url 'account_manager:login' %}");
+            {% endif %}
+            
+        });
+        $(".cls_add_comment").click(function(){
+            var key = $(this).attr("key");
+            $("#id_comment_frame_" + key).slideToggle();
+
+            $(".cls_add_comment[key=" + key + "]").toggleClass("detail_question_button");
+            $(".cls_add_comment[key=" + key + "]").toggleClass("detail_question_button_pushed");
+            
+        });
+
+        $("#id_button_post_comment_to_d").click(function(){
+            var key = $(this).attr("key");
+            $("#id_comment_frame_" + key).slideToggle();
+
+            $(this).toggleClass("detail_question_button");
+            $(this).toggleClass("detail_question_button_pushed");
+            
+        });
+
+       
+        $(".cls_buttons_post_comment").click(function(){
+            $.ajax({
+                url: "{% url 'q_and_a:ajax_post_comment'%}",
+                headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                method: "POST",
+                data:{
+                    id: $(this).attr("key"),
+                    body: $("textarea[key=" + $(this).attr("key") + "]")[0].value,
+                },
+                timeout: 5000,
+                contentType: "application/json",
+            })
+            .done(function(data){
+                if(data == "OK"){
+                    location.reload();
+                    window.scrollTo(0,0);
+                }else{
+                    alert(data);
+                }
+            })
+        });
+        
+        $(".cls_buttons_clear_comment").click(function(){
+            this.parentNode.parentNode.parentNode.getElementsByTagName("textarea")[0].value = "";
+        })
+
+        $(".cls_good_comment").click(function(){
+            {% if  user.is_authenticated  %}
+
+                var element = $(this);
+                
+                $.ajax({
+                    url: "{% url 'q_and_a:ajax_submit_good' %}",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    data: {
+                        type: "comment",
+                        uuid: element.attr("key"),
+                        user: "{{ request.user.username }}",
+                    },
+                    timeout: 5000,
+                    contentType: "application/json",
+                })
+                .done(function(data){
+                    if(data.substr(0,3) == "02E"){//減算
+                        $("#id_c_value_good_" + element.attr("key"))[0].innerText = " " + data.substr(3);
+                        element[0].innerHTML = "<a>+ それな</a>";
+                    }
+                    else if(data.substr(0,3) == "01E"){//加算
+                        $("#id_c_value_good_" + element.attr("key"))[0].innerText = " " + data.substr(3);
+                        element[0].innerHTML = "<a>- ちゃうわ</a>";
+
+                    }
+                    else{
+                        var msg = "";
+                        switch(data){
+                            case "same_person":
+                                msg = "自分の投稿には適用できません。";
+                                break;
+                            case "error":
+                                msg = "エラーが発生しました。";
+                                break;
+                            default:
+                                break;
+                        }
+                        alert(msg);
+                    }
+                });
+
+            {% else %}
+                window.location.assign("{% url 'account_manager:login' %}");
+            {% endif %}
+            
+        });
+
+        $(".cls_reply_comment").click(function(){
+            var key = $(this).attr("key");
+            var txt = this.parentNode.parentNode.parentNode.children[0].innerText.split("\n");
+            $("textarea[key=" + key + "]")[0].value = "\n> " + txt.join("\n> ");
+
+            $("html,body").animate({scrollTop: $("textarea[key=" + key + "]").offset().top});
+        });
+
+    });
+
+</script>
+{% endblock content%}

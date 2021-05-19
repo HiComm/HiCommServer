@@ -13,6 +13,8 @@ CustomUser = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField(max_length=256)
+    is_official = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name
 
@@ -44,7 +46,7 @@ class Comment(PostItem):
 
 class Question(PostItem):
     title = models.CharField(default="", max_length=512)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     is_solved = models.BooleanField(default=False)
     num_answers = models.IntegerField(default=0)
 
@@ -59,8 +61,9 @@ class Answer(PostItem):
 
 class Diary(PostItem):
     title = models.CharField(default="", max_length=512)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     good_posted_by = models.ManyToManyField(CustomUser, blank=True, related_name="d_good_posted_by")
+    comments = GenericRelation(Comment)
     #related_to = models.ForeignKey(PostItem, on_delete=models.CASCADE, related_name="%(class)s_related_to",  null=True, blank=True, default=None)
 
 

@@ -9,6 +9,7 @@
 $(document).ready(function(){
     markdown2html();
     document.getElementById('id_body').onkeyup=markdown2html;
+
 });
 
 //遷移防止
@@ -16,62 +17,98 @@ window.onbeforeunload = function(event){
     event = event || window.event; 
     event.returnValue = 'ページから移動しますか？';
   }
+
+//tag datalistの格納
+var list_tags = [];
+//draft dataの格納
+var draft_jsondata;
+var timer;
+
+
 </script>
 <section id="mde-buttons" class="section">
-    <form method="POST">
+    {% csrf_token %}
+    <h1 class="title">ナレッジ投稿画面</h1>
+    <hr>
+    <form method="POST" id="id_post_question_form">
         {% csrf_token%}
-    <div class="field">
-        <label>
-            {{ form.title.label_tag}}
-        </label>
-        <div class="control is-large">
-            {{ form.title }}
+
+
+        <div class="field is-horizontal">
+            <div class="field-label is-normal">
+                <label class="label">
+                    {{ form.title.label_tag}}
+                </label>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    {{ form.title }}
+                </div>
+            </div>
         </div>
-    </div>
+
+        <div class="field is-horizontal">
+            
+            <div class="field-label is-normal">
+                <label class="label">
+                    Tags:
+                </label>
+            </div>
+            <div class="field-body">
+                <div class="buttons" id="id_tag_buttons">
+                    <!-- tags -->
+                </div>
+                <div class="field" style="display:table-cell;vertical-align:middle;">
+                    <input id="id_input_tags" class="input" placeholder="タグを入力してください" autocomplete="on" list="datalist_tag_suggest">
+                    <p>※サジェスト候補にないタグは#を頭につけてください（e.g. #HIOKI）</p>
+                </div>
+                <input class="field" name="tags" id="id_tags" type="hidden">
+            </div>
+        </div>
 
     <div class="field has-addons">
         <p class="control">
-            <button class="button" onclick="bold_button()">
+            <button class="button" onclick="bold_button()" type="button">
                 <i class="fa fa-bold"></i>
             </button>
         </p>
         <p class="control">
-            <button class="button" onclick="italic_button()">
+            <button class="button" onclick="italic_button()" type="button">
                 <i class="fa fa-italic"></i>
             </button>
         </p>
         <p class="control">
-            <button class="button" onclick="header_button()">
+            <button class="button" onclick="header_button()" type="button">
                 <i class="fas fa-heading"></i>
             </button>
         </p>
         <p class="control">
-            <button class="button">
+            <button class="button" onclick="itemize_button()" type="button">
                 <i class="fa fa-list-ul"></i>
             </button>
         </p>
         <p class="control">
-            <button class="button">
+            <button class="button" onclick="numeric_button()" type="button">
                 <i class="fa fa-list-ol"></i>
             </button>
         </p>
         <p class="control">
-            <button class="button">
+            <button class="button" onclick="quote_button()" type="button">
                 <i class="fa fa-quote-right"></i>
             </button>
         </p>
         <p class="control">
-            <button class="button">
+            <button class="button" onclick="link_button()" type="button">
                 <i class="fa fa-link"></i>
             </button>
         </p>
         <p class="control">
-            <button class="button">
+            <button class="button" onclick="image_button()" type="button">
                 <i class="fa fa-image"></i>
             </button>
         </p>
         <p class="control">
-            <button class="button" data-target="cheat-sheet" onclick="question_button()">
+            <button class="button" data-target="cheat-sheet" onclick="question_button()" type="button">
                 <i class="fa fa-question-circle"></i>
             </button>
         </p>
@@ -88,7 +125,7 @@ window.onbeforeunload = function(event){
         <article id="cheat-sheet" class="message is-hidden">
             <div class="message-header">
                 <p>Markdown cheat sheet</p>
-                <button class="delete is-medium" aria-label="delete" onclick="hiddenCheatSheet()"></button>
+                <button class="delete is-medium" aria-label="delete" onclick="hiddenCheatSheet()" type="button"></button>
             </div>
             <div class="message-body">
                 <h4>Codes</h4>
@@ -111,17 +148,275 @@ window.onbeforeunload = function(event){
             </div>
         </article>
     </div>
+    <datalist id="datalist_tag_suggest">
 
-    
+    </datalist>
+
+    <script>
+        window.addEventListener("load", function(){
+            $.ajax({
+                    url: "ajax/get_tags_json",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    timeout: 10000,
+                    contentType: "application/json",
+            })
+            .done(function(data) {
+                var dl = document.getElementById("datalist_tag_suggest");
+                var json = JSON.parse(data);
+                json.forEach(function(item){
+                    if(item.is_official){
+                        var opt = document.createElement("option");
+                        var name = item.name;
+                        opt.value = name.replace(/ /g, "_") + " ";
+                        opt.label = name;
+                        dl.appendChild(opt);
+
+                        list_tags.push(name.replace(/ /g, "_"));
+                    }
+                });
+            });
+           
+        });
         
-    <div class="footer_toolbar_container has-background-link-dark">
-        <div class="footer_toolbar">
+        function save_draft(typename){
+            if($("form")[0].reportValidity()){
+                $.ajax({
+                        url: "ajax/save_draft",
+                        headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                        method: "POST",
+                        data: {
+                            id : $("input[name='dftid']")[0].value,
+                            type: typename,
+                            title: $("#id_title")[0].value,
+                            body: $("#id_body")[0].value,
+                        },
+                        timeout: 10000,
+                        contentType: "application/json",
+                })
+                .done(function(data) {
+                    data = new String(data);
+                    $("input[name='dftid']")[0].value = data;
+                });
+            }
+        }
+        
+        function row_clicked(obj){
+    
+            var ky = obj.getAttribute("key"); 
+            if(ky.length > 0){
+                $("input[name='dftid']").val(ky);
+                var data = draft_jsondata.filter(function(data){return data.uuid == ky})[0];
+                $("input[name='title']").val(data.title);
+                $("textarea[name='body']").val(data.body);
+
+                toggleDraftMenu();
+                markdown2html();
+            }else{
+                console.log(ky);
+            }
+        }
+        function inputFromFile(){
+            showOpenFileDialog()
+            .then((file)=>
+                readAsText(file))
+            .then((content)=>{
+                $("textarea[name='body']").val(content);
+                markdown2html();
+            });
+        }
+
+        function toggleDraftMenu(){
+            $("#id_draft_table").toggleClass("is-active");
+            
+            if($("#id_draft_table").hasClass("is-active")){//表示した場合
+                $.ajax({
+                    url: "ajax/get_d_drafts",
+                    headers: {"X-CSRFToken" : getCookie("csrftoken")},
+                    method: "POST",
+                    timeout: 10000,
+                    contentType: "application/json",
+                })
+                .done(function(data){//data->table
+                    $("#id_loading_circle").hide();
+
+                    var html = "";
+                    draft_jsondata = JSON.parse(data);
+
+                    var n_draft = draft_jsondata.length;
+
+                    if(n_draft === 0){//
+                        $("#id_draft_card_body")[0].innerHTML = "<p>下書きがありません。</p>"
+                        $("#id_button_draft_select").prop("disabled", true);
+                    }else{
+                        $("#id_draft_table_body")[0].innerHTML = '\
+                            <thead>\
+                                <tr>\
+                                    <th><abbr title="Created">作成日時</abbr></th>\
+                                    <th><abbr title="Modified">最終更新</abbr></th>\
+                                    <th><abbr title="Title">タイトル</abbr></th>\
+                                    <th><abbr title="Body">本文</abbr></th>\
+                                </tr>\
+                            </thead>\
+                            <tfoot>\
+                                <tr>\
+                                    <th><abbr title="Created">作成日時</abbr></th>\
+                                    <th><abbr title="Modified">最終更新</abbr></th>\
+                                    <th><abbr title="Title">タイトル</abbr></th>\
+                                    <th><abbr title="Body">本文</abbr></th>\
+                                </tr>\
+                            </tfoot>\
+                            <tbody></tbody>';
+                        for(var i=0; i<n_draft; ++i){
+                            var content = draft_jsondata[i];
+                            var c_date = new Date(content["date_created"])
+                            var m_date = new Date(content["date_modified"])
+                            
+
+                            html += "<tr key='" + content["uuid"] +"' onclick='row_clicked(this);'>\n";
+                            html += "<td>" + c_date.toLocaleDateString() + "<br>" + c_date.toLocaleTimeString() + "</td>\n";
+                            html += "<td>" + m_date.toLocaleDateString() + "<br>" + m_date.toLocaleTimeString() + "</td>\n";
+                            html += "<td>" + content["title"].substr(0, 16);
+                            if (content["title"].length > 16){
+                                html += "...";
+                            }
+                            html += "</td>\n";
+                            html += "<td>" + content["body"].substr(0, 16);
+                            if (content["title"].length > 16){
+                                html += "...";
+                            }
+                            html += "</td>\n";
+                            html += "</tr>\n"
+                        }
+                        $("tbody")[0].innerHTML = html;
+                    }
+                });
+            }
+        }
+
+
+        $("#id_input_tags").keyup(function(){
+            if($("#id_input_tags").val()[0] == " "){
+                $("#id_input_tags").val($("#id_input_tags").val().substr(1));
+            }
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                var tags = $("#id_input_tags").val().replace("/　/g", " ").split(" ");
+                var to_delete = []
+                if(tags.length > 1){
+                    for(var i=0; i<tags.length; ++i){
+                        if(tags[i].length == 0){
+                            continue;
+                        } 
+                        if(list_tags.includes(tags[i])){//公式タグ生成
+                            if(document.getElementById("id_tag_buttons").innerText.split("\n").includes(tags[i])){
+                                to_delete.push(tags[i]);
+                            }else{
+                                var btn = document.createElement("button");
+                                btn.className = "button is-info is-outlined cls_delete_tag";
+                                btn.type = "button";
+
+                                var lbl = document.createElement("span");
+                                lbl.innerText = tags[i].replace(/_/g, " ");
+                                btn.appendChild(lbl);
+
+                                var icon = document.createElement("span");
+                                icon.className = "icon is-small";
+                                var ic = document.createElement("i");
+                                ic.className = "fas fa-times";
+                                icon.appendChild(ic);
+                                btn.appendChild(icon);
+
+                                document.getElementById("id_tag_buttons").appendChild(btn);
+
+                                to_delete.push(tags[i]);
+                            }
+                        }else{
+                            if(tags[i].length>1){
+                                if(tags[i][0] == "#"){
+                                    if(document.getElementById("id_tag_buttons").innerText.split("\n").includes(tags[i].substr(1).replace(/_/g, " "))){
+                                       to_delete.push(tags[i]);
+                                    }else{
+                                        var btn = document.createElement("button");
+                                        btn.className = "button is-warning";
+                                        btn.type = "button";
+
+                                        var lbl = document.createElement("span");
+                                        lbl.innerText = tags[i].substr(1).replace(/_/g, " ");
+                                        btn.appendChild(lbl);
+
+                                        var icon = document.createElement("span");
+                                        icon.className = "icon is-small cls_delete_tag";
+                                        var ic = document.createElement("i");
+                                        ic.className = "fas fa-times";
+                                        icon.appendChild(ic);
+                                        btn.appendChild(icon);
+
+                                        document.getElementById("id_tag_buttons").appendChild(btn);
+
+                                        to_delete.push(tags[i]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(to_delete.length > 0){
+                        $("#id_input_tags").val(tags.filter(function(val){return (to_delete.includes(val))==false}).join(" ") + " ");
+                    }
+                }
+            }, 500);
+        });
+
+        $("#id_post_question_form").submit(function(){
+            var tags = document.getElementById("id_tag_buttons").innerText.split("\n");
+            document.getElementById("id_tags").value = tags.join(",");
+        });
+    </script>
+    
+    <input type="hidden" name="dftid" value="initial">
+        
+    <div class="footer_toolbar_container has-background-link-dark level">
+        <div class="level-left">
+            <button class="button is-rounded is-link level-item" type="button" onclick="inputFromFile()">ファイルから記入</button>
+            <button class="button is-rounded is-link level-item" type="button" onclick="toggleDraftMenu()">下書きから記入</button>
+        </div>
+        <div class="footer_toolbar level-right">
             <button class="button is-large is-primary footer_toolbar_button" type="submit">投稿する</button>
-            <button class="button is-large is-info is-light footer_toolbar_button" type="button">下書き保存</button>
+            <button class="button is-large is-info is-light footer_toolbar_button" type="button" onclick="save_draft('article')" formaction="ajax/save_draft">下書き保存</button>
       </div>
     </div>
     </form>
+
 </section>
+
+<!-- draft list -->
+<div id="id_draft_table" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card" style="width: 70%;">
+      <header class="modal-card-head">
+        <p class="modal-card-title">下書きを選んでください</p>
+        <button class="delete" aria-label="close" onclick='toggleDraftMenu()'></button>
+      </header>
+      <section class="modal-card-body" id="id_draft_card_body">
+        <div class="has-text-centered" id="id_loading_circle">
+            <i class="fad fa-spinner-third fa-spin fa-5x"></i>
+        </div>
+        <div><!--table-->
+            <table class="table is-fullwidth cls_table_draft_select" id="id_draft_table_body">
+                
+                <tbody>
+                  <tr>
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-success" id="id_button_draft_select">選択</button>
+        <button class="button" onclick="toggleDraftMenu()">キャンセル</button>
+      </footer>
+    </div>
+  </div>
 {% endblock %}
 
 {%block footermenu %}
