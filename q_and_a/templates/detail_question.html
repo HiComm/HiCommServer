@@ -129,15 +129,21 @@
             <div class="media-content">
             <div class="field">
                 <p class="control">
-                <textarea class="textarea" placeholder="Add a comment..." key = "{{item.uuid}}"></textarea>
-                </p>
+                    {% if user.is_authenticated %}
+                    <textarea class="textarea" placeholder="Add a comment..." key = "{{item.uuid}}"></textarea>
+                    {% else %}
+                    コメント投稿には<a href="{% url 'account_manager:login' %}">ログイン</a>が必要です。
+                    {% endif %}
+                    </p>
             </div>
+            {% if user.is_authenticated %}
             <div class="field">
                 <p class="control">
                 <button class="button is-info cls_buttons_post_comment" key = "{{item.uuid}}">コメント投稿</button>
                 <button class="button cls_buttons_clear_comment">クリア</button>
                 </p>
             </div>
+            {% endif %}
             </div>
         </article>
     </div>
@@ -294,15 +300,21 @@
                     <div class="media-content">
                     <div class="field">
                         <p class="control">
+                        {% if user.is_authenticated %}
                         <textarea class="textarea" placeholder="Add a comment..." key = "{{answer.uuid}}"></textarea>
+                        {% else %}
+                        コメント投稿には<a href="{% url 'account_manager:login' %}">ログイン</a>が必要です。
+                        {% endif %}
                         </p>
                     </div>
+                    {% if user.is_authenticated %}
                     <div class="field">
                         <p class="control">
                         <button class="button is-info cls_buttons_post_comment" key = "{{answer.uuid}}">コメント投稿</button>
                         <button class="button cls_buttons_clear_comment">クリア</button>
                         </p>
                     </div>
+                    {% endif %}
                     </div>
                 </article>
                 </div>

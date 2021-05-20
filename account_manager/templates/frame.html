@@ -4,13 +4,14 @@
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <meta charset="utf-8">
+        <script src="{% static 'js/utility.js' %}"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <!-- ファビコン（サイトのアイコン）設定．-->
         <link rel="shortcut icon" href="{% static "images/hiokichi.ico" %}" type="image/vnd.microsoft.icon">
         <!-- awesome font: アイコンのフォント -->
         <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.13.0/css/all.css">
 
-        
+        <script src="{% static 'js/callback.js' %}"></script>
         
         <!-- CSSフレームワーク：BULMA (https://bulma.io/documentation/) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
@@ -18,11 +19,16 @@
         <link rel="stylesheet" type="text/css" href="{% static "css/headline.css" %}">
         <link rel="stylesheet" type="text/css" href="{% static "css/markdown.css" %}">
 
-        <title>HiComm Login</title>
+        <title>{% block title %}HiComm{% endblock title %}</title>
+
+        <script>
+            
+        </script>
     </head>
 
     <body>
     <!-- header -->
+    {% include "ie.html" %}
 
     <!-- navi -->
     <nav class="navbar">
@@ -73,10 +79,10 @@
                     </div>
 
                     <div class="control is-expanded">
-                        <input class="input is-rounded" type="text" placeholder="キーワード検索">
+                        <input class="input is-rounded" type="text" placeholder="キーワード検索" id="id_input_query">
                     </div>
                     <div class="control">
-                        <a class="button is-info">
+                        <a class="button is-info" id="id_btn_search">
                             <i class="fa fa-search"></i> 検索
                         </a>
                     </div>
@@ -88,8 +94,8 @@
     <!-- main body -->
     
     {% block content %}{% endblock %}
+    {% block ie %} {% endblock %}
     
-
     <!-- footer -->
     <footer class="footer">
         <div class="content has-text-centered">

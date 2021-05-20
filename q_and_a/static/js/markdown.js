@@ -1,8 +1,8 @@
-window.onload = function() {
+window.addEventListener("load", function() {
     inputTabInTextarea();
     addShortcutKey();
     removeShortcutKey();
-}
+});
 
 // textareaでのTABキー入力
 function inputTabInTextarea() {

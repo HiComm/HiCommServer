@@ -14,14 +14,6 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function isIE() {
-    var userAgent = window.navigator.userAgent.toLowerCase();
-    if ( userAgent.indexOf( 'msie' ) !== -1 || userAgent.indexOf( 'trident' ) !== -1 ) {
-        return true;
-    }
-    return false;
-}
-
 function showOpenFileDialog(){
     return new Promise(resolve => {
         const input = document.createElement('input');

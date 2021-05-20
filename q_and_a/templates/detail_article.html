@@ -114,17 +114,23 @@
             </p>
             </figure>
             <div class="media-content">
-            <div class="field">
-                <p class="control">
-                <textarea class="textarea" placeholder="Add a comment..." key = "{{item.uuid}}"></textarea>
-                </p>
-            </div>
-            <div class="field">
-                <p class="control">
-                <button class="button is-info cls_buttons_post_comment" key = "{{item.uuid}}">コメント投稿</button>
-                <button class="button cls_buttons_clear_comment">クリア</button>
-                </p>
-            </div>
+                <div class="field">
+                    <p class="control">
+                    {% if user.is_authenticated %}
+                    <textarea class="textarea" placeholder="Add a comment..." key = "{{item.uuid}}"></textarea>
+                    {% else %}
+                    コメントを記入するにはログインが必要です。
+                    {% endif %}
+                    </p>
+                </div>
+                {% if user.is_authenticated %}
+                <div class="field">
+                    <p class="control">
+                    <button class="button is-info cls_buttons_post_comment" key = "{{item.uuid}}">コメント投稿</button>
+                    <button class="button cls_buttons_clear_comment">クリア</button>
+                    </p>
+                </div>
+                {% endif %}
             </div>
         </article>
     </div>
@@ -155,6 +161,7 @@ $(document).ready(function(){
         });
 
         /* ボタン制御 */
+        
         document.getElementById("id_good_article").addEventListener("click", function(){
             {% if  user.is_authenticated  %}
 
@@ -211,6 +218,8 @@ $(document).ready(function(){
             {% endif %}
             
         });
+
+        {% if user.is_authenticated %}
         $(".cls_add_comment").click(function(){
             var key = $(this).attr("key");
             $("#id_comment_frame_" + key).slideToggle();
@@ -219,16 +228,6 @@ $(document).ready(function(){
             $(".cls_add_comment[key=" + key + "]").toggleClass("detail_question_button_pushed");
             
         });
-
-        $("#id_button_post_comment_to_d").click(function(){
-            var key = $(this).attr("key");
-            $("#id_comment_frame_" + key).slideToggle();
-
-            $(this).toggleClass("detail_question_button");
-            $(this).toggleClass("detail_question_button_pushed");
-            
-        });
-
        
         $(".cls_buttons_post_comment").click(function(){
             $.ajax({
@@ -255,6 +254,17 @@ $(document).ready(function(){
         $(".cls_buttons_clear_comment").click(function(){
             this.parentNode.parentNode.parentNode.getElementsByTagName("textarea")[0].value = "";
         })
+
+        {% endif %}
+
+        $("#id_button_post_comment_to_d").click(function(){
+            var key = $(this).attr("key");
+            $("#id_comment_frame_" + key).slideToggle();
+
+            $(this).toggleClass("detail_question_button");
+            $(this).toggleClass("detail_question_button_pushed");
+            
+        });
 
         $(".cls_good_comment").click(function(){
             {% if  user.is_authenticated  %}

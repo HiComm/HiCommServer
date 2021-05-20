@@ -1,0 +1,45 @@
+{% load static %}
+{% block ie %}
+    <div id="id_ie_warning" class="modal" style="display: none;">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="modal-card">
+                <header class="modal-card-head">
+                  <p class="modal-card-title">お知らせ</p>
+                </header>
+                <section class="modal-card-body has-text-centered">
+                  <!-- Content ... -->
+                Internet Explorerは、Edge、FireFox、Chromeといったモダンブラウザが共通してサポートしている機能を搭載していません。<br>
+                <br>
+                Windows 10のIE 11は、2025年10月14日にサポートが終了します。<br>
+                <br>
+                恐れ入りますが、すべての機能をご利用いただくだめ、<br>
+                Internet Explorer以外のブラウザをご利用下さい。
+                <div>
+                    <figure class="image is-128x128" style="margin-left: auto; margin-right: auto;">
+                        <img src="{% static 'images/pose_syazai_sliding_dogeza_man.png' %}" alt="土下座のイラスト">
+                    </figure>
+                </div>
+            
+                </section>
+                <footer class="modal-card-foot">
+                  
+                </footer>
+            </div>
+        </div>
+    </div>
+    <script>
+        function isIE() {
+            var userAgent = window.navigator.userAgent.toLowerCase();
+            if ( userAgent.indexOf( 'msie' ) !== -1 || userAgent.indexOf( 'trident' ) !== -1 ) {
+                return true;
+            }
+            return false;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            if ( isIE() ) {
+                document.getElementById("id_ie_warning").setAttribute("style", "display: block;");
+            }
+        });
+    </script>
+{% endblock %}

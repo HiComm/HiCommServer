@@ -8,7 +8,7 @@
         <!-- utility -->
         <script src="{% static 'js/utility.js' %}"></script>
         <!-- ファビコン（サイトのアイコン）設定．-->
-        <link rel="shortcut icon" href="{% static "images/hiokichi.ico" %}" type="image/vnd.microsoft.icon">
+        <link rel="shortcut icon" href="{% static 'images/hiokichi.ico' %}" type="image/vnd.microsoft.icon">
         <!-- CSSフレームワーク：BULMA (https://bulma.io/documentation/) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
         <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.13.0/css/all.css">
@@ -18,11 +18,9 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
         <!-- ショートカットキーを実装するためのスクリプト -->
-        <script type="text/javascript" src="{% static "js/shortcut.js" %}"></script>
+        <script type="text/javascript" src='{% static "js/shortcut.js" %}'></script>
 
-        <!-- マークダウンエディタ用の自作ボタン -->
-        <script src="{% static 'js/markdown_buttons.js' %}"></script>
-        <script src="{% static 'js/markdown.js' %}"></script>
+        <script src="{% static 'js/callback.js' %}"></script>
 
 
         <!-- カスタム用のCSS -->
@@ -33,9 +31,11 @@
 
 
         <title>{% block title %}HiComm{% endblock title %}</title>
+
     </head>
 
     <body>
+    {% include "ie.html" %}
     <!-- header -->
 
     <!-- navi -->
@@ -43,7 +43,7 @@
         <div class="navbar-brand">
             <div class="navbar-menu">
                 <a class="navbar-item">
-                    <img src="{% static "images/hiokichi.ico" %}" width="auto">
+                    <img src="{% static 'images/hiokichi.ico' %}" width="auto">
                 </a>
                 <a class="navbar-item" href="{% url 'q_and_a:index' %}">
                     Home
@@ -87,10 +87,10 @@
                     </div>
 
                     <div class="control is-expanded">
-                        <input class="input is-rounded" type="text" placeholder="キーワード検索">
+                        <input class="input is-rounded" type="text" placeholder="キーワード検索" id="id_input_query">
                     </div>
                     <div class="control">
-                        <a class="button is-info">
+                        <a class="button is-info" id="id_btn_search">
                             <i class="fa fa-search"></i> 検索
                         </a>
                     </div>
@@ -104,31 +104,7 @@
         {% block content %}{% endblock %}
     </section>
     {% block footermenu %}{% endblock %}
-    <!-- ============================================================================ -->
-    
-    <!-- -->
-    <div id="id_ie_warning" class="modal" style="display: none;">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <div class="modal-card">
-                <header class="modal-card-head">
-                  <p class="modal-card-title">お知らせ</p>
-                </header>
-                <section class="modal-card-body has-text-centered">
-                  <!-- Content ... -->
-                Internet Explorerは、Edge、FireFox、Chromeといったモダンブラウザが共通してサポートしている機能を搭載していません。<br>
-                <br>
-                Windows 10のIE 11は、2025年10月14日にサポートが終了します。<br>
-                <br>
-                恐れ入りますが、すべての機能をご利用いただくだめ、<br>
-                Internet Explorer以外のブラウザをご利用下さい。
-                </section>
-                <footer class="modal-card-foot">
-                  
-                </footer>
-            </div>
-        </div>
-    </div>
+    {% block ie %} {% endblock %}
 
     <!-- footer -->
     <footer class="footer">
@@ -138,15 +114,6 @@
             </p>
         </div>
     </footer>
-    
-    <script>
-          /* DOM構造読み込み完了後にアラート表示のHTMLを挿入 */
-            document.addEventListener("DOMContentLoaded", function () {
-                if ( isIE() ) {
-                    document.getElementById("id_ie_warning").setAttribute("style", "display: block;");
-                }
-            });
-    </script>
 
     </body>
 <!--
