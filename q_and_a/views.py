@@ -17,7 +17,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.core.paginator import Paginator
 from django.http import QueryDict
 from django.core import serializers
+from django.db.models import Q
 
+import re
 import json
 
 # Create your views here.
@@ -83,12 +85,13 @@ def post_question(request):
 
 
                 for tagname in request.POST["tags"].split(","):
-                    if Tag.objects.filter(name=tagname).exists():
-                        tag = Tag.objects.get(name=tagname)
-                        item.tags.add(tag)
-                    else:
-                        new_tag = Tag.objects.create(name=tagname)
-                        item.tags.add(new_tag)
+                    if tagname:
+                        if Tag.objects.filter(name=tagname).exists():
+                            tag = Tag.objects.get(name=tagname)
+                            item.tags.add(tag)
+                        else:
+                            new_tag = Tag.objects.create(name=tagname)
+                            item.tags.add(new_tag)
                 
                 #item.save()
 
@@ -122,7 +125,16 @@ def post_diary(request):
                 item.is_draft = False
                 item.date_created = timezone.now()
                 item.save()
-
+                
+                for tagname in request.POST["tags"].split(","):
+                    if tagname:
+                        if Tag.objects.filter(name=tagname).exists():
+                            tag = Tag.objects.get(name=tagname)
+                            item.tags.add(tag)
+                        else:
+                            new_tag = Tag.objects.create(name=tagname)
+                            item.tags.add(new_tag)
+                            
                 return redirect(reverse_lazy('q_and_a:index'))
 
             else:#validじゃないとき
@@ -183,6 +195,38 @@ def detail_diary(request, article_id):
     except Exception as e:
         print(e)
         return redirect(reverse_lazy("q_and_a:error"))
+
+def search_result(request):
+    try:
+        template_name = "search.html"#
+        query = request.GET["query"]
+        query_list = re.split(' (?=(?:(?:[^"]*"){2})*[^"]*$)', query)
+        
+        qobj = Q()
+
+        for q_word in query_list:
+            if q_word:
+                if q_word[0] == "\"" and q_word[-1] == "\"":
+                    qobj |= Q(title__icontains=q_word[1:-1])
+                    qobj |= Q(body__icontains=q_word[1:-1])
+                else:
+                    qobj |= Q(title__icontains=q_word)
+                    qobj |= Q(body__icontains=q_word)
+        
+        print(qobj)
+        questions = Question.objects.filter(qobj)
+        articles = Diary.objects.filter(qobj)
+
+        context = {
+            "query": query,
+            "Question_list": questions,
+            "Diary_list": articles,
+        }
+        return render(request, template_name, context)
+    except Exception as e:
+        print(e)
+        return redirect(reverse_lazy("q_and_a:error"))
+
 
 #ajax系は以下------------------------------------------------------------
 

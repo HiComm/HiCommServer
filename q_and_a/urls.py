@@ -13,6 +13,7 @@ urlpatterns = [
     path("article/<uuid:article_id>/", views.detail_diary, name="detail_article"),
     path("ajax/submit_good/", login_required(views.ajax_submit_good), name="ajax_submit_good"),
     path("post/answer/<uuid:question_id>/", login_required(views.ajax_post_answer), name="post_answer"),
+    path("search/", views.search_result, name="search_result"),
     path("error/", views.ErrorPage.as_view(), name="error"),
     #path("contents/<uuid:user_id>/<uuid:content_id>", ),
 

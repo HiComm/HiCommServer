@@ -22,6 +22,9 @@
 
         <script src="{% static 'js/callback.js' %}"></script>
 
+        <!-- マークダウンエディタ用の自作ボタン -->
+        <script src="{% static 'js/markdown_buttons.js' %}"></script>
+        <script src="{% static 'js/markdown.js' %}"></script>
 
         <!-- カスタム用のCSS -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/customize_bulma.css' %}">
@@ -87,7 +90,7 @@
                     </div>
 
                     <div class="control is-expanded">
-                        <input class="input is-rounded" type="text" placeholder="キーワード検索" id="id_input_query">
+                        <input class="input is-rounded" type="text" placeholder="キーワード検索" id="id_input_query" value="{{ request.GET.query }}">
                     </div>
                     <div class="control">
                         <a class="button is-info" id="id_btn_search">

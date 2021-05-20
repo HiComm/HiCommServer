@@ -7,13 +7,13 @@
 <div class="section" style="border:1px solid; display: none;">
     通知欄？
 </div>
+<h2 class="subtitle"> 「{{query}}」 の検索結果 </h2>
 <main class="columns is-mobile is-variable is-0-mobile is-2-tablet is-4-desktop is-6-widescreen is-8-fullhd" style="word-break: break-all;">
-    <p> xxxx の検索結果</p>
-    <div class="column has-background-grey-light">
+    <div class="column" style="min-height: 300px;">
         <h1 class="title headline-red">Q＆A</h1>
         {% if not Question_list %}
         <div class="has-text-centered">
-            <p>まだ投稿はありません。<br>気軽に投稿してみてください。</p>
+            <p>合致する検索結果がありませんでした。</p>
         </div>
         {% endif %}
 
@@ -88,11 +88,11 @@
     </div>
     <!-- knowledge　-->
 
-    <div class="column has-background-white-ter">
+    <div class="column">
         <h1 class="title headline-blue">Knowledge</h1>
         {% if not Diary_list %}
         <div class="has-text-centered">
-            <p>まだ投稿はありません。是非投稿してみてください。</p>
+            <p>合致する検索結果がありませんでした。</p>
         </div>
         {% endif %}
         {% for d in Diary_list %}                
