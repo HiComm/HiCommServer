@@ -1,9 +1,10 @@
 window.addEventListener("load",function(){
-    this.document.getElementById("id_btn_search").onkeyup = function(e){
+    $(document).on("keypress", function(e){
         if (e.key === 'Enter'){
-            console.log('hello Enter')
+            document.getElementById("id_btn_search").click();
         }
-    }
+    });
+
     this.document.getElementById("id_btn_search").onclick = function(){
         var query = document.getElementById("id_input_query").value;
         console.log(encodeURI("/search?query=" + query));

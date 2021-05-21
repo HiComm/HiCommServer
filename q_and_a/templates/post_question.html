@@ -3,10 +3,6 @@
 質問を投稿する | {{ block.super }}
 {% endblock title %}
 
-{% load static%}
-<!-- マークダウンエディタ用の自作ボタン -->
-<script src="{% static 'js/markdown_buttons.js' %}"></script>
-<script src="{% static 'js/markdown.js' %}"></script>
 
 {% block content %}
 <script>
@@ -342,7 +338,7 @@ var timer;
                                        to_delete.push(tags[i]);
                                     }else{
                                         var btn = document.createElement("button");
-                                        btn.className = "button is-warning";
+                                        btn.className = "button is-warning cls_delete_tag";
                                         btn.type = "button";
 
                                         var lbl = document.createElement("span");
@@ -350,7 +346,7 @@ var timer;
                                         btn.appendChild(lbl);
 
                                         var icon = document.createElement("span");
-                                        icon.className = "icon is-small cls_delete_tag";
+                                        icon.className = "icon is-small";
                                         var ic = document.createElement("i");
                                         ic.className = "fas fa-times";
                                         icon.appendChild(ic);
@@ -369,6 +365,10 @@ var timer;
                     }
                 }
             }, 500);
+        });
+
+        $(document).on("click", ".cls_delete_tag", function(){
+            this.remove();
         });
 
         $("#id_post_question_form").submit(function(){

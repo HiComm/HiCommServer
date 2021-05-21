@@ -338,7 +338,7 @@ var timer;
                                        to_delete.push(tags[i]);
                                     }else{
                                         var btn = document.createElement("button");
-                                        btn.className = "button is-warning";
+                                        btn.className = "button is-warning cls_delete_tag";
                                         btn.type = "button";
 
                                         var lbl = document.createElement("span");
@@ -346,7 +346,7 @@ var timer;
                                         btn.appendChild(lbl);
 
                                         var icon = document.createElement("span");
-                                        icon.className = "icon is-small cls_delete_tag";
+                                        icon.className = "icon is-small";
                                         var ic = document.createElement("i");
                                         ic.className = "fas fa-times";
                                         icon.appendChild(ic);
@@ -371,6 +371,11 @@ var timer;
             var tags = document.getElementById("id_tag_buttons").innerText.split("\n");
             document.getElementById("id_tags").value = tags.join(",");
         });
+
+        $(document).on("click", ".cls_delete_tag", function(){
+            this.remove();
+        });
+
     </script>
     
     <input type="hidden" name="dftid" value="initial">
