@@ -122,6 +122,32 @@
             </article>
         </div>
         {% endfor %}
+
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            {% if Diary_list.has_previous %}
+            <a class="pagination-previous" href="?p1={{ Diray_list.previous_page_number }}">Previous</a>
+            {% endif %}
+            {% if Diary_list.has_next %}
+            <a class="pagination-next" href="?p1={{ Diary_list.next_page_number }}">Next</a>
+            {% endif %}
+            <ul class="pagination-list">
+                {% if Diary_list.has_previous %}
+                    {% if Diary_list.previous_page_number != 1 %}
+                    <li><a class="pagination-link" href="?p1=1">1</a></li>
+                    <li><i class="fas fa-ellipsis-h"></i></li>
+                    {% endif %}
+                    <li><a class="pagination-link" href="?p1={{ Diary_list.previous_page_number }}">{{ Diary_list.previous_page_number }}</a></li>
+                {% endif %}
+                <li><a class="pagination-link is-current" href="?p1={{ Diary_list.number }}" >{{ Diary_list.number }}</a></li>
+                {% if Diary_list.has_next %}
+                    <li><a class="pagination-link" href="?p1={{ Diary_list.next_page_number }}">{{ Diary_list.next_page_number }}</a></li>
+                    {% if Diary_list.next_page_number != Diary_list.paginator.num_pages %}
+                    <li><i class="fas fa-ellipsis-h"></i></li>
+                    <li><a class="pagination-link" href="?p1={{ Diary_list.paginator.num_pages }}">{{ Diary_list.paginator.num_pages }}</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 　</main>
 {% endblock %}

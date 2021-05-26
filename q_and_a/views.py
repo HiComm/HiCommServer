@@ -38,7 +38,7 @@ class IndexView(ListView):
         all_q_list = Question.objects.filter(is_draft=False).order_by("-date_created")
         all_d_list = Diary.objects.filter(is_draft=False).order_by("-date_created")
         
-        n_posts_per_page = 4
+        n_posts_per_page = 25
         paginator_q = Paginator(all_q_list, n_posts_per_page)
         paginator_d = Paginator(all_d_list, n_posts_per_page)
         p1 = request.GET.get("p1")
