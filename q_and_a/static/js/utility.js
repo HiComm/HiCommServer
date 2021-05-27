@@ -26,6 +26,10 @@ function showOpenFileDialog(){
 
 function readAsText(file){
     return new Promise(resolve => {
+        if(file.size > 1000000){
+            alert("ファイルサイズ：" + file.size + "Byte\nファイルサイズは1MB以下にしてください。");
+            return;
+        }
         const reader = new FileReader();
         reader.readAsText(file);
         reader.onload = () => { resolve(reader.result); };

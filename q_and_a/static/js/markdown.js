@@ -62,6 +62,8 @@ function removeShortcutKey() {
     }
 }
 
+var mathjaxTimer = null
+
 function markdown2html() {
     document.getElementById('result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc').innerHTML =
     marked(document.getElementById('id_body').value);
@@ -74,6 +76,11 @@ function markdown2html() {
     var nodelist = document.querySelectorAll('pre code');
     var node = Array.prototype.slice.call(nodelist,0); 
     node.forEach(function(block){
-        hljs.highlightBlock(block);
+        hljs.highlightElement(block);
     });
+
+    clearInterval(mathjaxTimer);
+    mathjaxTimer = setTimeout(function(){
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub,"result_6efc3b09-3fc2-0a7a-8ca0-3c3c04b331fc"]);
+    }, 600);
 }

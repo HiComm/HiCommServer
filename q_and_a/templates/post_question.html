@@ -247,9 +247,12 @@ var timer;
                     var n_draft = draft_jsondata.length;
 
                     if(n_draft === 0){//
-                        $("#id_draft_card_body")[0].innerHTML = "<p>下書きがありません。</p>"
+                        $("#id_no_draft").show();
+                        $("#id_draft_table_body").hide();
                         $("#id_button_draft_select").prop("disabled", true);
                     }else{
+                        $("#id_no_draft").hide();
+                        $("#id_draft_table_body").show();
                         $("#id_draft_table_body")[0].innerHTML = '\
                             <thead>\
                                 <tr>\
@@ -402,6 +405,9 @@ var timer;
         <button class="delete" aria-label="close" onclick='toggleDraftMenu()'></button>
       </header>
       <section class="modal-card-body" id="id_draft_card_body">
+        <div id="id_no_draft">
+            <p>下書きがありません。</p>
+        </div>
         <div class="has-text-centered" id="id_loading_circle">
             <i class="fad fa-spinner-third fa-spin fa-5x"></i>
         </div>

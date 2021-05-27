@@ -26,6 +26,14 @@
         <script src="{% static 'js/markdown_buttons.js' %}"></script>
         <script src="{% static 'js/markdown.js' %}"></script>
 
+        <!-- Mathjax -->
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ["\\(","\\)"]] } });
+          </script>
+          <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML">
+          </script>
+        
         <!-- カスタム用のCSS -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/customize_bulma.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/headline.css' %}">
@@ -57,6 +65,9 @@
             </div>
         </div>
         <div class="navbar-end">
+            <span class="navbar-item">
+                <i class="fas fa-bell"></i>
+            </span>
             <span class="navbar-item">
                 {% if user.is_authenticated %}
                 <p class="navbar-item">ようこそ！　{{ user.username }} さん</p>
