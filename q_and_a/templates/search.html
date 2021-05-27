@@ -60,31 +60,6 @@
         </div>
         {% endfor %}
 
-        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-            {% if Question_list.has_previous %}
-            <a class="pagination-previous" href="?p1={{ Question_list.previous_page_number }}">Previous</a>
-            {% endif %}
-            {% if Question_list.has_next %}
-            <a class="pagination-next" href="?p1={{ Question_list.next_page_number }}">Next</a>
-            {% endif %}
-            <ul class="pagination-list">
-                {% if Question_list.has_previous %}
-                    {% if Question_list.previous_page_number != 1 %}
-                    <li><a class="pagination-link" href="?p1=1">1</a></li>
-                    <li><i class="fas fa-ellipsis-h"></i></li>
-                    {% endif %}
-                    <li><a class="pagination-link" href="?p1={{ Question_list.previous_page_number }}">{{ Question_list.previous_page_number }}</a></li>
-                {% endif %}
-                <li><a class="pagination-link is-current" href="?p1={{ Question_list.number }}" >{{ Question_list.number }}</a></li>
-                {% if Question_list.has_next %}
-                    <li><a class="pagination-link" href="?p1={{ Question_list.next_page_number }}">{{ Question_list.next_page_number }}</a></li>
-                    {% if Question_list.next_page_number != Question_list.paginator.num_pages %}
-                    <li><i class="fas fa-ellipsis-h"></i></li>
-                    <li><a class="pagination-link" href="?p1={{ Question_list.paginator.num_pages }}">{{ Question_list.paginator.num_pages }}</a></li>
-                    {% endif %}
-                {% endif %}
-            </ul>
-        </nav>
     </div>
     <!-- knowledge　-->
 
