@@ -19,19 +19,14 @@ from django.http import QueryDict
 from django.core import serializers
 from django.db.models import Q
 
+from account_manager.models import Notification
+
 import re
 import json
 
 # Create your views here.
 class IndexView(ListView):
     template_name = "index.html"
-    context_object_name = "OverviewList"
-    
-
-    model = PostItem
-
-    ctx = {}
-
 
     def get(self, request, *args, **kwargs):
         ctx = {}
@@ -47,6 +42,10 @@ class IndexView(ListView):
         ctx["Question_list"] = paginator_q.get_page(p1)
         ctx["Diary_list"] = paginator_d.get_page(p2)
         ctx["paginator_q"] = paginator_q
+
+        if request.user.is_authenticated:
+            notifications = request.user.notification_set.filter(is_read=False)
+            ctx["notifications"] = notifications
 
         return render(request, "index.html", ctx)
 
@@ -241,6 +240,10 @@ def ajax_set_bestanswer(request, question_id):
                     qst.is_solved = True
                     ans.save()
                     qst.save()
+
+                    #send notification
+                    notify = Notification.objects.create(post_to=qst.author, body="あなたの回答がベストアンサーに選ばれました！")
+
                     return HttpResponse("OK1")
                 else:#取り消す場合
                     if ans.is_BestAnswer == True:
@@ -307,10 +310,32 @@ def ajax_post_answer(request, question_id):
         ans.save()#いる？
         question.save()
 
+        #send notification
+        notify = Notification.objects.create(post_to=question.author, body="質問への回答が投稿されました。")
+
+
         return HttpResponse("true")
         #return redirect(reverse_lazy('q_and_a:detail_question', args=[question_id]))
     else:#error
         return redirect(reverse_lazy("q_and_a:error"))
+
+def ajax_read_notify(request):
+    if request.method == "POST":
+        print(request.body)
+        try:   
+            rqst = QueryDict(request.body, encoding='utf-8')
+            obj = Notification.objects.get(uuid=rqst["uuid"])
+            obj.is_read = True
+            obj.save()
+
+            return HttpResponse("OK")
+        
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest("internal server error")
+        
+    else:
+        return HttpResponseBadRequest()
 
 
 def ajax_save_draft(request):
@@ -420,6 +445,10 @@ def ajax_post_comment(request):
                 comment.save()
             else:
                 return HttpResponseBadRequest("internal server error")
+
+            #通知生成
+            notify = Notification.objects.create(post_to=item.author, body="投稿にコメントがつきました。")
+            notify.save()
 
             return HttpResponse("OK")
 

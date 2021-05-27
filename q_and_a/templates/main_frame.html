@@ -65,9 +65,40 @@
             </div>
         </div>
         <div class="navbar-end">
+            {% if user.is_authenticated %}
             <span class="navbar-item">
-                <i class="fas fa-bell"></i>
+                <div class="dropdown">
+                    <div class="dropdown-trigger">
+                    <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" onclick="this.parentNode.parentNode.classList.toggle('is-active')">
+                        <span class="icon is-small" {% if notifications.count > 0 %}data-badge="{{notifications.count}}"{% endif %}>
+                            <i class="fas fa-bell" aria-hidden="true"></i>
+                        </span>
+                    </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            {% for notify in notifications %}
+                            <div class="dropdown-item" onclick="readNotify(this, '{{notify.uuid}}');">
+                                <p>{{ notify.body }}</p>
+                            </div>
+                            <hr class="dropdown-divider">
+                            {% endfor %}
+                            
+                            {% if notifications.count > 0 %}
+                            <!--
+                            <a href="#" class="dropdown-item">
+                                すべて既読にする
+                            </a>-->
+                            {% else %}
+                            <div class="dropdown-item">
+                                <p>通知はありません</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div> 
             </span>
+            {% endif %}
             <span class="navbar-item">
                 {% if user.is_authenticated %}
                 <p class="navbar-item">ようこそ！　{{ user.username }} さん</p>
@@ -129,6 +160,40 @@
         </div>
     </footer>
 
+    <script>
+    function readNotify(elem, uuid_str){
+        $.ajax({
+            url: "ajax/read_notify",
+            headers: {"X-CSRFToken" : getCookie("csrftoken")},
+            method: "POST",
+            data:{
+                uuid: uuid_str,
+            },
+            timeout: 10000,
+            contentType: "application/json",
+        })
+        .done(function(data){
+            var parent = elem.parentNode;
+            var badge= elem.parentNode.parentNode.previousElementSibling.children[0].children[0];
+
+            $(elem.nextElementSibling).remove();//<hr>要素
+            $(elem).remove();
+
+            //通知数更新
+            var point = parseInt(badge.getAttribute("data-badge")) - 1;
+            if(point <= 0){
+                badge.removeAttribute("data-badge");
+            }else{
+                badge.setAttribute("data-badge", String(point));
+            }
+
+            //
+            if(parent.getElementsByClassName("dropdown-divider").length == 0){//全部読んだら
+                parent.innerHTML = "<a class='dropdown-item'>未読の通知はありません</a>";
+            }
+        });
+    }
+    </script>
     </body>
 <!--
                                    ...((-......

@@ -23,4 +23,5 @@ urlpatterns = [
     path("ajax/set_bestanswer/<uuid:question_id>/", login_required(views.ajax_set_bestanswer), name="ajax_set_bestanswer"),
     path("ajax/post_comment", login_required(views.ajax_post_comment), name="ajax_post_comment"),
     path("ajax/get_tags_json", views.ajax_get_tags_json, name="ajax_get_tags_json"),
+    path("ajax/read_notify", login_required(views.ajax_read_notify), name="ajax_read_notify"),
 ]

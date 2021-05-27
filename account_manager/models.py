@@ -7,6 +7,8 @@ from django.core.mail import send_mail
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+
+import uuid
 # Create your models here.
 
 class UserManager(BaseUserManager):
@@ -72,3 +74,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def sendmail(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+
+
+class Notification(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post_to = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    body = models.TextField(default="")
+    date_published = models.DateTimeField(auto_now_add=True)
+    #flags
+    is_read = models.BooleanField(default=False)
+    is_expired = models.BooleanField(default=False)
