@@ -177,13 +177,14 @@
     <!-- ソート用のタブ -->
     <div class="tabs is-right">
         <ul>
-          <li class="is-active"><a>Goodの多い順</a></li>
-          <li><a>投稿の早い順</a></li>
-          <li><a>あと何か</a></li>
+          <li id="id_sorttab_good" class="is-active"><a>Goodの多い順</a></li>
+          <li id="id_sorttab_early"><a>投稿の早い順</a></li>
+          <li id="id_sorttab_late"><a>投稿の新しい順</a></li>
         </ul>
     </div>
+    <div id="id_answer_cards">
         {% for answer in answers %}
-        <div class="card">        
+        <div class="card cls_answer_card">        
             <div class="card-content">
                 <div class="media">
                     <div class="media-left">
@@ -227,7 +228,7 @@
                         
                         <div class="level-right">
                             <p class="level-item">
-                                <small> {{answer.date_published}}</small>
+                                <small class="cls_item_date"> {{answer.date_published}}</small>
                             </p>
                             <p class="level-item">
                                 written by:&nbsp;<a>{{ answer.author.username }}</a>
@@ -322,6 +323,7 @@
         </div>
         <br>
         {% endfor %}
+    </div>
     {% else %}
     <hr>
     <p> まだ回答はありません </p>
@@ -698,7 +700,65 @@
             $("html,body").animate({scrollTop: $("textarea[key=" + key + "]").offset().top});
         });
 
+        $("#id_sorttab_early").click(function(){
+            var arr = Array.prototype.slice.call(document.getElementsByClassName("card"));
+            arr.sort(compDateEarliest);
+            const section = document.getElementById("id_answer_cards");
+            for (var i=0; i<arr.length; i++) {
+                section.appendChild(section.removeChild(arr[i]));
+            }
+            $("#id_sorttab_early").toggleClass("is-active");
+            $("#id_sorttab_good").removeClass("is-active");
+            $("#id_sorttab_late").removeClass("is-active");
+        });
+
+        $("#id_sorttab_late").click(function(){
+            var arr = Array.prototype.slice.call(document.getElementsByClassName("card"));
+            arr.sort(compDateLatest);
+            const section = document.getElementById("id_answer_cards");
+            for (var i=0; i<arr.length; i++) {
+                section.appendChild(section.removeChild(arr[i]));
+            }
+            $("#id_sorttab_late").toggleClass("is-active");
+            $("#id_sorttab_good").removeClass("is-active");
+            $("#id_sorttab_early").removeClass("is-active");
+        })
+
+        $("#id_sorttab_good").click(function(){
+            var arr = Array.prototype.slice.call(document.getElementsByClassName("card"));
+            arr.sort(compGood);
+            const section = document.getElementById("id_answer_cards");
+            for (var i=0; i<arr.length; i++) {
+                section.appendChild(section.removeChild(arr[i]));
+            }
+            $("#id_sorttab_good").toggleClass("is-active");
+            $("#id_sorttab_late").removeClass("is-active");
+            $("#id_sorttab_early").removeClass("is-active");
+        })
     });
+
+    function getDate(elem){
+        return new Date(elem.getElementsByClassName("cls_item_date")[0].innerHTML.replace("年", "/").replace("月", "/").replace("日", " "));
+    }
+
+    function compDateLatest(a, b){
+        if(getDate(a) > getDate(b)) return -1;
+        else if(getDate(a) == getDate(b)) return 0;
+        else return 1;
+    }
+    function compDateEarliest(a, b){
+        if(getDate(a) > getDate(b)) return 1;
+        else if(getDate(a) == getDate(b)) return 0;
+        else return -1;
+    }
+    function compGood(a, b){
+        var na = parseInt(a.getElementsByClassName("icon")[0].nextSibling.nextSibling.innerHTML);
+        var nb = parseInt(b.getElementsByClassName("icon")[0].nextSibling.nextSibling.innerHTML);
+
+        if(na>nb) return -1;
+        else return (na==nb)?0:1;
+    }
+
 </script>
 
 {% endblock %}

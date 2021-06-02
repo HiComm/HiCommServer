@@ -242,7 +242,7 @@ def ajax_set_bestanswer(request, question_id):
                     qst.save()
 
                     #send notification
-                    notify = Notification.objects.create(post_to=qst.author, body="あなたの回答がベストアンサーに選ばれました！")
+                    notify = Notification.objects.create(post_to=qst.author, body="<a href='/questions/" + str(qst.uuid) +"/'>あなたの回答</a>がベストアンサーに選ばれました！")
 
                     return HttpResponse("OK1")
                 else:#取り消す場合
@@ -311,7 +311,7 @@ def ajax_post_answer(request, question_id):
         question.save()
 
         #send notification
-        notify = Notification.objects.create(post_to=question.author, body="質問への回答が投稿されました。")
+        notify = Notification.objects.create(post_to=question.author, body="<a href='/questions/" + str(question.uuid) + "/'>質問</a>への回答が投稿されました。")
 
 
         return HttpResponse("true")
@@ -430,24 +430,28 @@ def ajax_post_comment(request):
         try:
             rqst = QueryDict(request.body, encoding='utf-8')
             id = rqst["id"]
+            link = "/"
 
             if Question.objects.filter(uuid=id).exists():
                 item = Question.objects.get(uuid=id)
                 comment = Comment(author=request.user, body=rqst["body"], is_draft=False, post_to=item)
                 comment.save()
+                link = "/questions/" + str(item.uuid)
             elif Answer.objects.filter(uuid=id).exists():
                 item = Answer.objects.get(uuid=id)
                 comment = Comment(author=request.user, body=rqst["body"], is_draft=False, post_to=item)
                 comment.save()
+                link = "/questions/" + str(item.reply_to.uuid) + "/#id_comment_frame_" + str(item.uuid)
             elif Diary.objects.filter(uuid=id).exists():
                 item = Diary.objects.get(uuid=id)
                 comment = Comment(author=request.user, body=rqst["body"], is_draft=False, post_to=item)
                 comment.save()
+                link = "/article/" + str(item.uuid)
             else:
                 return HttpResponseBadRequest("internal server error")
 
             #通知生成
-            notify = Notification.objects.create(post_to=item.author, body="投稿にコメントがつきました。")
+            notify = Notification.objects.create(post_to=item.author, body="<a href='" + link +"'>投稿</a>にコメントがつきました。")
             notify.save()
 
             return HttpResponse("OK")

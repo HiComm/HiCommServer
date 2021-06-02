@@ -115,6 +115,11 @@
   box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.1);
   color: #000;
   }
+
+.cls_answer_card{
+  margin-bottom: 20px;
+}
+
 /* unread badge */
 
 span[data-badge]:before {

@@ -79,7 +79,7 @@
                         <div class="dropdown-content">
                             {% for notify in notifications %}
                             <div class="dropdown-item" onclick="readNotify(this, '{{notify.uuid}}');">
-                                <p>{{ notify.body }}</p>
+                                <p>{{ notify.body | safe }}</p>
                             </div>
                             <hr class="dropdown-divider">
                             {% endfor %}
