@@ -35,3 +35,55 @@ function readAsText(file){
         reader.onload = () => { resolve(reader.result); };
     });
 }
+
+function sendimage(_data){
+    $.ajax({
+        url: "http://172.19.115.160:8082/api/image/post/",//TODO:画像サーバー
+        type: "POST",
+        data: _data,
+        contentType: "text/plain",
+        timeout: 2000,
+    }).done((data)=>{
+        alert(data);
+    })
+}
+
+function uploadimage(){
+
+    var element =  document.querySelector("textarea");
+    
+    element.addEventListener("paste", function(e){
+        console.log(e.clipboardData.types);
+        var idx = e.clipboardData.types.indexOf("Files");
+        if(idx < 0){
+            ;//do nothing
+        }else{
+            // ファイルとして得る
+            var imageFile = e.clipboardData.items[idx].getAsFile();
+            var fr = new FileReader();
+            fr.onload = function(e) {
+                var base64 = e.target.result;
+                sendimage(base64);
+            };
+            fr.readAsDataURL(imageFile);
+            
+        }
+    });
+
+    element.addEventListener("drop", function(e){
+        e.preventDefault();
+        var files = e.dataTransfer.files;
+        for(var i=0; i<files.length; ++i){
+            if(files[i].size > 10000000){
+                alert("file size is too large.");
+                continue;
+            }
+            var fr = new FileReader();
+            fr.onload = function(e) {
+                var base64 = e.target.result;
+                sendimage(base64);
+            };
+            fr.readAsDataURL(files[i]);
+        }
+    });
+}

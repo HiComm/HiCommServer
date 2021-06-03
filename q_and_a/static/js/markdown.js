@@ -2,6 +2,8 @@ window.addEventListener("load", function() {
     inputTabInTextarea();
     addShortcutKey();
     removeShortcutKey();
+
+    uploadimage();
 });
 
 // textareaでのTABキー入力
@@ -36,7 +38,7 @@ function validFocusOnTextarea() {
 function addShortcutKey() {
     document.getElementById('id_body').onfocus = function() {
         // "B"ボタン
-        shortcut.add("Shift+a", function() {
+        shortcut.add("Ctrl+Shift+a", function() {
             $('#mde-buttons div p:nth-child(1) button').click();
         });
         // I ボタン(** **)
@@ -52,7 +54,7 @@ function addShortcutKey() {
 function removeShortcutKey() {
     document.getElementById('id_body').onblur = function() {
         // "B"ボタン
-        shortcut.remove("Shift+a");
+        shortcut.remove("Ctrl+Shift+a");
         // I ボタン(** **)
         // H ボタン(#)
         // list-ul ボタン(*)
