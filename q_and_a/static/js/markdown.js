@@ -2,8 +2,6 @@ window.addEventListener("load", function() {
     inputTabInTextarea();
     addShortcutKey();
     removeShortcutKey();
-
-    uploadimage();
 });
 
 // textareaでのTABキー入力
