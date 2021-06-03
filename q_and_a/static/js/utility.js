@@ -37,14 +37,16 @@ function readAsText(file){
 }
 
 function sendimage(_data){
+    var url_server = "http://172.19.115.160:8082"
     $.ajax({
-        url: "http://172.19.115.160:8082/api/image/post/",//TODO:画像サーバー
+        url: url_server + "/api/image/post/",//TODO:画像サーバー
         type: "POST",
         data: _data,
         contentType: "text/plain",
         timeout: 2000,
     }).done((data)=>{
-        alert(data);
+        var link = url_server + data;
+        image_button(link);
     })
 }
 
@@ -53,7 +55,7 @@ function uploadimage(){
     var element =  document.querySelector("textarea");
     
     element.addEventListener("paste", function(e){
-        console.log(e.clipboardData.types);
+        e.preventDefault();
         var idx = e.clipboardData.types.indexOf("Files");
         if(idx < 0){
             ;//do nothing

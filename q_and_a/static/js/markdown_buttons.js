@@ -207,7 +207,7 @@ function link_button(){
     markdown2html();
 }
 
-function image_button(){
+function image_button(url="https://画像へのURL"){
     var editor = document.getElementById("id_body");
     var pos_start = editor.selectionStart;
     var pos_end = editor.selectionEnd;
@@ -217,7 +217,7 @@ function image_button(){
     var before   = sentence.substr(0, pos_start);
     var after    = sentence.substr(pos_start, len);
 
-    var insertTxt = '![置換テキスト](https://画像へのURL "タイトル")';
+    var insertTxt = '\n![置換テキスト](' + url + ' "タイトル")\n';
     editor.value = before + insertTxt + after;
     
     editor.focus();
