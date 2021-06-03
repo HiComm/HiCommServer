@@ -1,7 +1,4 @@
 window.addEventListener("load",function(){
-    uploadimage();
-
-
     document.getElementById("id_input_query").addEventListener("keypress", function(e){
         if (e.key === 'Enter'){
             document.getElementById("id_btn_search").click();
@@ -112,4 +109,6 @@ window.addEventListener("load",function(){
         */
     };
 
+
+    uploadimage();
 });

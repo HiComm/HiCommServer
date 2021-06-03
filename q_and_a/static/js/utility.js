@@ -55,6 +55,7 @@ function uploadimage(){
     var element =  document.querySelector("textarea");
     
     element.addEventListener("paste", function(e){
+        console.log(e.clipboardData.types);
         e.preventDefault();
         var idx = e.clipboardData.types.indexOf("Files");
         if(idx < 0){
@@ -62,6 +63,7 @@ function uploadimage(){
         }else{
             // ファイルとして得る
             var imageFile = e.clipboardData.items[idx].getAsFile();
+            console.log(imageFile);
             var fr = new FileReader();
             fr.onload = function(e) {
                 var base64 = e.target.result;
@@ -73,6 +75,7 @@ function uploadimage(){
     });
 
     element.addEventListener("drop", function(e){
+        console.log("!");
         e.preventDefault();
         var files = e.dataTransfer.files;
         for(var i=0; i<files.length; ++i){
