@@ -1,0 +1,7 @@
+ # This is an appspec.
+  version: 0.0
+  os: linux
+  files:
+    - source: /
+      destination: /home/ubuntu/hicomm/
+      
